@@ -13,10 +13,8 @@ function mapUrl(coords: string) {
   return `https://www.google.com/maps?q=${coords}&z=17&hl=ar`;
 }
 
-/** Static mini-map preview — always visible (no blank iframe). */
-function mapPreview(coords: string) {
-  const [lat, lng] = coords.split(",");
-  return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=640x320&maptype=mapnik&markers=${lat},${lng},red-pushpin`;
+function mapEmbed(coords: string) {
+  return `https://www.google.com/maps?q=${coords}&hl=ar&z=15&output=embed`;
 }
 
 type Place = {
@@ -594,41 +592,46 @@ function PlaceCard({
         <p className="mt-1 text-sm text-muted-foreground">{place.detail}</p>
       </div>
 
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`افتح موقع ${place.title} على الخريطة`}
-        className="place-map group relative mt-5 block overflow-hidden border-t border-border"
-      >
-        <div className="relative h-40 overflow-hidden bg-mist sm:h-44">
-          <img
-            src={mapPreview(place.coords)}
-            alt={`خريطة ${place.title}`}
-            width={640}
-            height={320}
+      <div className="place-map relative mt-5 overflow-hidden border-t border-border">
+        <div className="relative h-44 overflow-hidden bg-mist sm:h-48">
+          <iframe
+            title={`خريطة جوجل — ${place.title}`}
+            src={mapEmbed(place.coords)}
             loading="lazy"
-            decoding="async"
-            className="map-frame h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+            className="absolute inset-0 h-full w-full border-0"
           />
-          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-paper/90 via-transparent to-transparent" />
-          <span className="absolute right-3 top-3 rounded-full border border-rose/30 bg-paper/95 px-3 py-1 text-xs text-rose shadow-sm">
+          {/* Transparent click layer so the card opens Google Maps without fighting the iframe */}
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`افتح موقع ${place.title} على خرائط جوجل`}
+            className="absolute inset-0 z-10"
+          />
+          <span className="pointer-events-none absolute right-3 top-3 z-20 rounded-full border border-rose/30 bg-paper/95 px-3 py-1 text-xs text-rose shadow-sm">
             خرائط جوجل
           </span>
-          <span className="map-pin map-pin-pulse absolute bottom-3 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-rose text-primary-foreground shadow-soft">
+        </div>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 bg-paper px-5 py-3.5 transition hover:bg-rose-soft/30"
+        >
+          <span className="map-pin map-pin-pulse flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose text-primary-foreground">
             <PinIcon />
           </span>
-        </div>
-        <div className="flex items-center gap-3 bg-paper px-5 py-3.5">
           <div className="min-w-0 flex-1 text-right">
             <p className="font-display text-base">افتح الموقع</p>
-            <p className="text-xs text-muted-foreground">اضغط للاتجاهات</p>
+            <p className="text-xs text-muted-foreground">اضغط للاتجاهات على خرائط جوجل</p>
           </div>
-          <span className="shrink-0 rounded-full border border-rose/40 px-3 py-1 text-sm text-rose transition group-hover:bg-rose group-hover:text-primary-foreground">
+          <span className="shrink-0 rounded-full border border-rose/40 px-3 py-1 text-sm text-rose">
             اتجاهات
           </span>
-        </div>
-      </a>
+        </a>
+      </div>
     </article>
   );
 }
