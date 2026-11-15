@@ -4,15 +4,61 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import bride from "@/assets/bride.webp";
 import floral from "@/assets/floral-corner.webp";
 import groom from "@/assets/groom.webp";
-import rose from "@/assets/white-rose.webp";
 
-const EVENT_START = new Date("2026-10-19T19:00:00+03:00");
-const EVENT_END = new Date("2026-10-19T21:00:00+03:00");
-const VENUE = "دارة الحاج أحمد مسلم الأعرج";
-const VENUE_COORDS = "32.01993179321289,36.067955017089844";
-const VENUE_MAP_URL = `https://www.google.com/maps?q=${VENUE_COORDS}&z=17&hl=ar`;
-const VENUE_MAP_EMBED_URL = `https://maps.google.com/maps?q=${VENUE_COORDS}&hl=ar&z=16&output=embed`;
-const TITLE = "دعوة جاهة كريمة — بلال & روان";
+const EVENT_START = new Date("2026-11-26T20:30:00+03:00");
+const EVENT_END = new Date("2026-11-26T23:00:00+03:00");
+const TITLE = "دعوة زفاف — محمد وضحى";
+
+function mapUrl(coords: string) {
+  return `https://www.google.com/maps?q=${coords}&z=17&hl=ar`;
+}
+function mapEmbed(coords: string) {
+  return `https://maps.google.com/maps?q=${coords}&hl=ar&z=16&output=embed`;
+}
+
+const PLACES = [
+  {
+    id: "groom",
+    step: "01",
+    title: "دار العريس",
+    event: "زفة العريس",
+    time: "6:30",
+    timeLabel: "مساءً",
+    place: "اسكان طلال",
+    detail: "تجمّع العريس والانطلاق",
+    coords: "32.030727,36.057497",
+    accent: "groom" as const,
+  },
+  {
+    id: "bride",
+    step: "02",
+    title: "دار العروس",
+    event: "الفاردة",
+    time: "7:30",
+    timeLabel: "مساءً",
+    place: "اسكان هاشم",
+    detail: "استقبال العروس والانطلاق للقاعة",
+    coords: "32.0025,36.028889",
+    accent: "bride" as const,
+  },
+  {
+    id: "hall",
+    step: "03",
+    title: "الصالة",
+    event: "حفل الزفاف",
+    time: "8:30",
+    timeLabel: "حتى 11:00",
+    place: "قاعة أدونيس",
+    detail: "أوتوستراد عمان الزرقاء — مقابل نقليات جت",
+    coords: "32.00365,36.037211",
+    accent: "hall" as const,
+  },
+] as const;
+
+const VENUE = PLACES[2].place;
+const VENUE_MAP_URL = mapUrl(PLACES[2].coords);
+const GROOM_AREA = PLACES[0].place;
+const BRIDE_AREA = PLACES[1].place;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,41 +66,27 @@ export const Route = createFileRoute("/")({
       { title: TITLE },
       {
         name: "description",
-        content: "يتشرف آل البريجي وآل أبو ليل بدعوتكم لحضور جاهة بلال وروان، الاثنين 19/10/2026.",
+        content:
+          "يتشرف آل الكرمي وآل البدور بدعوتكم لحضور حفل زفاف محمد وضحى، الخميس 26/11/2026 في قاعة أدونيس.",
       },
       { property: "og:title", content: TITLE },
-      { property: "og:description", content: `الاثنين 19/10/2026 — ${VENUE}` },
+      { property: "og:description", content: `الخميس 26/11/2026 — ${VENUE}` },
     ],
   }),
   component: Invitation,
 });
 
-function Star({ size, className = "" }: { size: number; className?: string }) {
+function Divider({ className = "" }: { className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      className={`text-gold ${className}`}
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" />
-    </svg>
-  );
-}
-
-function Ornament({ className = "" }: { className?: string }) {
-  return (
-    <div className={`ornament flex items-center justify-center gap-3 ${className}`}>
-      <span className="gold-line w-14" />
-      <Star size={22} />
-      <span className="gold-line w-14" />
+    <div className={`ornament flex items-center justify-center gap-3 ${className}`} aria-hidden="true">
+      <span className="ornament-line w-14 sm:w-20" />
+      <span className="ornament-diamond h-2 w-2 rotate-45 bg-rose" />
+      <span className="ornament-line w-14 sm:w-20" />
     </div>
   );
 }
 
-function LineIcon({ size = 20, children }: { size?: number | undefined; children: ReactNode }) {
+function LineIcon({ size = 20, children }: { size?: number; children: ReactNode }) {
   return (
     <svg
       width={size}
@@ -62,7 +94,7 @@ function LineIcon({ size = 20, children }: { size?: number | undefined; children
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -72,27 +104,214 @@ function LineIcon({ size = 20, children }: { size?: number | undefined; children
   );
 }
 
-const PinIcon = ({ size }: { size?: number }) => (
-  <LineIcon size={size}>
-    <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
-    <circle cx="12" cy="9.5" r="2.5" />
-  </LineIcon>
-);
+function PinIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </LineIcon>
+  );
+}
 
-const ChatIcon = ({ size }: { size?: number }) => (
-  <LineIcon size={size}>
-    <path d="M4 20l1.3-3.9A8 8 0 1 1 8 19.1L4 20z" />
-    <path d="M9 10.5h6M9 13.5h4" />
-  </LineIcon>
-);
+function ChatIcon() {
+  return (
+    <LineIcon>
+      <path d="M4 20l1.3-3.9A8 8 0 1 1 8 19.1L4 20z" />
+      <path d="M9 10.5h6M9 13.5h4" />
+    </LineIcon>
+  );
+}
 
-const CalendarIcon = ({ size }: { size?: number }) => (
-  <LineIcon size={size}>
-    <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
-    <path d="M3.5 9.5h17M8 3v4M16 3v4" />
-    <path d="M12 13.5l.7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.7-1.4.7.3-1.5-1.1-1 1.5-.2z" />
-  </LineIcon>
-);
+function CalendarIcon() {
+  return (
+    <LineIcon>
+      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+      <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+    </LineIcon>
+  );
+}
+
+function Sparkles({ count = 14 }: { count?: number }) {
+  const dots = useRef(
+    Array.from({ length: count }, (_, i) => ({
+      left: `${(i * 37 + 11) % 100}%`,
+      top: `${(i * 53 + 9) % 100}%`,
+      size: 3 + ((i * 7) % 6),
+      delay: `${(i * 0.32) % 2.6}s`,
+    })),
+  ).current;
+
+  return (
+    <div className="sparkles pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {dots.map((d, i) => (
+        <span
+          key={i}
+          className="sparkle"
+          style={{
+            left: d.left,
+            top: d.top,
+            width: d.size,
+            height: d.size,
+            animationDelay: d.delay,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Petals() {
+  const items = useRef(
+    Array.from({ length: 11 }, (_, i) => ({
+      left: `${(i * 29 + 6) % 94}%`,
+      size: 8 + ((i * 5) % 10),
+      delay: `${i * 1.25}s`,
+      duration: `${10 + (i % 4) * 2.2}s`,
+    })),
+  ).current;
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-10 overflow-hidden" aria-hidden="true">
+      {items.map((p, i) => (
+        <span
+          key={i}
+          className="petal motion-reduce:hidden"
+          style={{
+            left: p.left,
+            top: "-5vh",
+            width: p.size,
+            height: p.size * 0.78,
+            animationDelay: p.delay,
+            animationDuration: p.duration,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function WeddingRings({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 84" className={className} aria-hidden="true">
+      <defs>
+        <linearGradient id="ring-rose" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="oklch(0.42 0.11 12)" />
+          <stop offset="0.5" stopColor="oklch(0.74 0.08 28)" />
+          <stop offset="1" stopColor="oklch(0.48 0.12 10)" />
+        </linearGradient>
+      </defs>
+      <circle cx="46" cy="54" r="24" fill="none" stroke="url(#ring-rose)" strokeWidth="5" />
+      <circle cx="74" cy="54" r="24" fill="none" stroke="url(#ring-rose)" strokeWidth="5" />
+      <path
+        d="M74 30 L65 19 L69 13 H79 L83 19 Z"
+        fill="var(--paper)"
+        stroke="url(#ring-rose)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CoupleNames({ size = "hero" }: { size?: "hero" | "section" | "inline" }) {
+  if (size === "inline") {
+    return (
+      <div className="relative flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-5 text-center">
+        <p className="name-mark text-[clamp(2.35rem,8.5vw,4.25rem)]">محمد</p>
+        <span className="font-latin text-3xl italic text-sage/65 lg:text-4xl">&amp;</span>
+        <p className="name-mark text-[clamp(2.35rem,8.5vw,4.25rem)]">ضحى</p>
+      </div>
+    );
+  }
+
+  const nameClass =
+    size === "hero"
+      ? "name-mark text-[clamp(3.1rem,12vw,6.75rem)]"
+      : "name-mark text-[clamp(2.5rem,9vw,4.5rem)]";
+
+  return (
+    <div className="relative px-5 text-center">
+      <p className={`hero-name-groom ${nameClass}`}>محمد</p>
+      <p className="hero-amp my-1 font-latin text-3xl italic text-sage/65 lg:text-4xl">&amp;</p>
+      <p className={`hero-name-bride ${nameClass}`}>ضحى</p>
+    </div>
+  );
+}
+
+function FloatingOrbs() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      <span className="float-orb float-orb-a absolute -left-[10%] top-[18%] h-56 w-56 lg:h-80 lg:w-80" />
+      <span className="float-orb float-orb-b absolute -right-[8%] top-[42%] h-48 w-48 lg:h-72 lg:w-72" />
+      <span className="float-orb float-orb-c absolute bottom-[8%] left-[30%] h-40 w-40 lg:h-56 lg:w-56" />
+    </div>
+  );
+}
+
+function Splash() {
+  return (
+    <div
+      className="splash pointer-events-none fixed inset-0 z-50 flex flex-col items-center justify-center bg-paper motion-reduce:hidden"
+      aria-hidden="true"
+    >
+      <div className="splash-bloom hero-bloom absolute inset-0" />
+      <div className="relative flex h-44 w-44 items-center justify-center lg:h-60 lg:w-60">
+        <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90">
+          <circle cx="50" cy="50" r="47" className="splash-ring" />
+          <circle cx="50" cy="50" r="42" className="splash-ring splash-ring-inner" />
+        </svg>
+        <p className="splash-mono font-latin text-5xl italic text-rose lg:text-7xl">M &amp; D</p>
+      </div>
+      <p className="splash-sub relative mt-8 font-display text-xl text-sage lg:text-2xl">
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      </p>
+      <p className="splash-sub relative mt-2 text-sm tracking-wide text-muted-foreground">دعوة زفاف</p>
+    </div>
+  );
+}
+
+function DoorSeal() {
+  const text = "محمد & ضحى  ✦  26 · 11 · 2026  ✦  ";
+  const r = 81;
+  return (
+    <div className="door-seal relative flex h-[17rem] w-[17rem] items-center justify-center lg:h-[26rem] lg:w-[26rem]">
+      <div className="hero-bloom absolute -inset-16 opacity-80" />
+      <svg
+        viewBox="0 0 200 200"
+        className="seal-ring absolute inset-0 overflow-visible text-rose"
+        aria-hidden="true"
+      >
+        <defs>
+          <path
+            id="door-seal-path"
+            d={`M100 100 m-${r} 0 a${r} ${r} 0 1 1 ${r * 2} 0 a${r} ${r} 0 1 1 -${r * 2} 0`}
+          />
+        </defs>
+        <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" strokeWidth="0.7" />
+        <circle
+          cx="100"
+          cy="100"
+          r="73"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.9"
+          strokeDasharray="0.5 3"
+        />
+        <text className="font-display" fontSize="12.5" fill="currentColor" direction="ltr">
+          <textPath href="#door-seal-path" textLength={2 * Math.PI * r} lengthAdjust="spacing">
+            {text.repeat(3)}
+          </textPath>
+        </text>
+      </svg>
+      <div className="relative flex aspect-square w-[66%] flex-col items-center justify-center rounded-full border border-rose/35 bg-paper shadow-soft">
+        <div className="pointer-events-none absolute inset-2 rounded-full border border-rose/20" />
+        <p className="font-latin text-4xl italic leading-none text-rose lg:text-6xl">M &amp; D</p>
+        <Divider className="my-3 lg:my-4" />
+        <h1 className="font-display text-lg text-ink lg:text-2xl">دعوة زفاف كريمة</h1>
+      </div>
+    </div>
+  );
+}
 
 function Door({ side }: { side: "left" | "right" }) {
   const isLeft = side === "left";
@@ -104,11 +323,10 @@ function Door({ side }: { side: "left" | "right" }) {
         backfaceVisibility: "hidden",
       }}
     >
-      <div className="absolute inset-4 rounded-t-[999px] border border-gold/50 lg:inset-8" />
-      <div className="absolute inset-7 rounded-t-[999px] border border-gold/30 lg:inset-12" />
+      <div className="absolute inset-4 rounded-t-[999px] border border-rose/45 lg:inset-8" />
+      <div className="absolute inset-7 rounded-t-[999px] border border-rose/25 lg:inset-12" />
       <div className="door-pattern absolute inset-7 rounded-t-[999px] lg:inset-12" />
-      <div className="absolute inset-x-10 bottom-[18%] top-[30%] rounded-t-[999px] border border-gold/35 shadow-[inset_0_0_40px_oklch(0.8_0.05_80/0.2)] lg:inset-x-[18%] lg:bottom-[14%] lg:top-[24%]" />
-      {/* Sized by height on wide screens so the flowers stay corner pieces. */}
+      <div className="absolute inset-x-10 bottom-[18%] top-[30%] rounded-t-[999px] border border-rose/30 lg:inset-x-[18%] lg:bottom-[14%] lg:top-[24%]" />
       <img
         src={floral}
         decoding="async"
@@ -127,250 +345,332 @@ function Door({ side }: { side: "left" | "right" }) {
         alt=""
         width={900}
         height={900}
-        className="absolute top-0 w-[60%] max-w-none opacity-90 lg:h-[40%] lg:w-auto"
+        className="absolute top-0 w-[58%] max-w-none opacity-90 lg:h-[38%] lg:w-auto"
         style={{ [isLeft ? "left" : "right"]: 0, transform: isLeft ? "" : "scaleX(-1)" }}
       />
       <div
-        className={`absolute top-1/2 h-16 w-2 -translate-y-1/2 rounded-full bg-gold lg:h-28 lg:w-2.5 ${isLeft ? "right-4 lg:right-8" : "left-4 lg:left-8"}`}
+        className={`absolute top-1/2 h-16 w-2 -translate-y-1/2 rounded-full bg-rose lg:h-28 lg:w-2.5 ${isLeft ? "right-4 lg:right-8" : "left-4 lg:left-8"}`}
       />
     </div>
   );
 }
 
-function Sparkles({ count = 14 }: { count?: number }) {
-  const dots = useRef(
-    Array.from({ length: count }, (_, i) => ({
-      left: `${(i * 37 + 13) % 100}%`,
-      top: `${(i * 53 + 7) % 100}%`,
-      size: 4 + ((i * 7) % 6),
-      delay: `${(i * 0.4) % 3}s`,
-    })),
-  ).current;
+function DoorHero() {
   return (
-    <div
-      className="sparkles pointer-events-none absolute inset-0 overflow-hidden"
-      aria-hidden="true"
-    >
-      {dots.map((d, i) => (
-        <span
-          key={i}
-          className="sparkle"
-          style={{
-            left: d.left,
-            top: d.top,
-            width: d.size,
-            height: d.size,
-            animationDelay: d.delay,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+    <section className="scene-doors scene-hero relative h-[230svh]">
+      <div className="sticky top-0 h-svh overflow-hidden" style={{ perspective: "1600px" }}>
+        <div className="bg-silk door-curtain absolute inset-0 origin-center" />
+        <div className="door-glow hero-bloom absolute inset-0" />
+        <FloatingOrbs />
+        <Sparkles count={16} />
 
-function Petals({ count = 8 }: { count?: number }) {
-  const items = useRef(
-    Array.from({ length: count }, (_, i) => ({
-      left: `${(i * 29 + 5) % 95}%`,
-      size: 10 + ((i * 5) % 10),
-      delay: `${i * 1.6}s`,
-      duration: `${10 + (i % 4) * 2}s`,
-    })),
-  ).current;
-  return (
-    <div className="pointer-events-none fixed inset-0 z-10 overflow-hidden" aria-hidden="true">
-      {items.map((p, i) => (
-        <span
-          key={i}
-          className="petal"
-          style={{
-            left: p.left,
-            top: "-5vh",
-            width: p.size,
-            height: p.size * 0.8,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function WeddingRings({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 120 84" className={className} aria-hidden="true">
-      <defs>
-        <linearGradient id="wedding-ring-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="oklch(0.62 0.08 70)" />
-          <stop offset="0.5" stopColor="oklch(0.9 0.07 88)" />
-          <stop offset="1" stopColor="oklch(0.66 0.09 72)" />
-        </linearGradient>
-      </defs>
-      <circle cx="46" cy="54" r="24" fill="none" stroke="url(#wedding-ring-gold)" strokeWidth="5" />
-      <circle cx="74" cy="54" r="24" fill="none" stroke="url(#wedding-ring-gold)" strokeWidth="5" />
-      <path
-        d="M74 30 L65 19 L69 13 H79 L83 19 Z"
-        fill="var(--pearl)"
-        stroke="url(#wedding-ring-gold)"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-// The CSS default is the final pose (couple together, everything shown), so
-// reduced-motion users and the pre-hydration render both see the finished scene.
-function CoupleScene() {
-  return (
-    <section className="scene-couple relative h-[320svh]" aria-label="بلال وروان">
-      <div className="bg-silk sticky top-0 h-svh overflow-hidden">
-        <div className="couple-glow bg-glow absolute inset-0" />
-        <div className="couple-rays pointer-events-none absolute left-1/2 top-[48%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2" />
-        <div className="couple-sparkles absolute inset-0">
-          <Sparkles count={14} />
-        </div>
-
-        <svg
-          viewBox="0 0 200 300"
-          preserveAspectRatio="none"
-          className="couple-arch pointer-events-none absolute bottom-[10svh] left-1/2 h-[64svh] w-[min(92vw,56svh)] -translate-x-1/2 lg:bottom-[3svh] lg:h-[86svh] lg:w-[64svh]"
-          aria-hidden="true"
-        >
-          <path d="M6 300 V96 A94 94 0 0 1 194 96 V300" className="couple-arch-line" />
-          <path
-            d="M18 300 V100 A82 82 0 0 1 182 100 V300"
-            className="couple-arch-line opacity-50"
-          />
-        </svg>
-
-        <div className="couple-intro absolute inset-x-0 top-[38svh] px-6 text-center motion-reduce:hidden">
-          <p className="font-display text-3xl text-olive lg:text-5xl">وتبدأ الحكاية…</p>
-          <p className="mt-3 animate-pulse text-sm text-muted-foreground lg:text-base">
-            تابع النزول
+        {/* Revealed after doors open — names centered, never side-clipped */}
+        <div className="door-reveal absolute inset-0 z-[5] flex flex-col items-center justify-center px-6 text-center opacity-0">
+          <p className="font-display text-xl text-sage lg:text-3xl">بكل الحب نزفّ إليكم</p>
+          <div className="mt-5 w-full max-w-3xl">
+            <CoupleNames size="hero" />
+          </div>
+          <Divider className="mt-7" />
+          <p
+            className="mt-5 font-latin text-lg tracking-[0.28em] text-rose lining-nums lg:text-2xl"
+            dir="ltr"
+          >
+            26 · 11 · 2026
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground lg:text-base">
+            دار العريس · دار العروس · الصالة
           </p>
         </div>
 
-        <div className="couple-title absolute inset-x-0 top-[7svh] px-6 text-center lg:top-[5svh]">
-          <p className="font-display text-gold-gradient text-5xl leading-snug lg:text-7xl">
-            وتلاقت القلوب
-          </p>
-          <p className="mt-1 font-display text-lg text-olive lg:text-2xl">على بركة الله</p>
-          <p className="mt-2 font-display text-2xl text-gold lg:hidden">بلال &amp; روان</p>
+        <Door side="left" />
+        <Door side="right" />
+
+        <div className="door-crack pointer-events-none absolute inset-y-0 left-1/2 z-10 w-1 -translate-x-1/2 motion-reduce:hidden">
+          <span className="door-crack-light absolute inset-0" />
         </div>
 
-        <p className="couple-name-bride font-display text-gold-gradient absolute left-[6%] top-1/2 hidden text-8xl xl:left-[10%] lg:block">
-          روان
-        </p>
-        <p className="couple-name-groom font-display text-gold-gradient absolute right-[6%] top-1/2 hidden text-8xl xl:right-[10%] lg:block">
-          بلال
-        </p>
-
-        {/* Kept above the phone's bottom action bar. */}
-        <div className="couple-floor absolute bottom-[9svh] left-1/2 h-10 w-[min(88vw,34rem)] -translate-x-1/2 rounded-[50%] lg:bottom-[2svh] lg:h-14 lg:w-[44rem]" />
-
-        <div
-          className="couple-stage absolute inset-x-0 bottom-[11svh] flex h-[48svh] origin-bottom items-end justify-center lg:bottom-[4svh] lg:h-[68svh]"
-          dir="ltr"
-        >
-          <div className="couple-bride relative h-[95%]">
-            <img
-              src={bride}
-              decoding="async"
-              alt="العروس روان"
-              width={555}
-              height={1014}
-              loading="lazy"
-              className="couple-step h-full w-auto max-w-none"
-            />
+        <div className="door-intro pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center">
+          <DoorSeal />
+          <p className="mt-6 animate-pulse text-sm text-muted-foreground lg:hidden">
+            اسحب للأسفل لفتح الدعوة
+          </p>
+          <span className="mt-2 text-rose lg:hidden" aria-hidden="true">
+            ↓
+          </span>
+          <div className="mt-7 hidden flex-col items-center gap-3 lg:flex">
+            <span className="mouse-hint" aria-hidden="true" />
+            <p className="text-base text-muted-foreground">مرّر عجلة الفأرة لفتح الباب</p>
           </div>
-          <div className="couple-groom relative -ml-[3svh] h-full">
-            <img
-              src={groom}
-              decoding="async"
-              alt="العريس بلال"
-              width={381}
-              height={1113}
-              loading="lazy"
-              className="couple-step h-full w-auto max-w-none"
-            />
-          </div>
-          <div
-            className="couple-burst pointer-events-none absolute left-1/2 top-0"
-            aria-hidden="true"
-          />
-          <WeddingRings className="couple-rings absolute left-1/2 top-0 w-20 -translate-x-1/2 -translate-y-[85%] drop-shadow-md lg:w-24" />
         </div>
       </div>
     </section>
   );
 }
 
-// `cycle` is the value at which a ring is drawn full; days use one week.
-const COUNTDOWN_UNITS = [
-  { label: "يوم", ms: 86_400_000, cycle: 7 },
-  { label: "ساعة", ms: 3_600_000, cycle: 24 },
-  { label: "دقيقة", ms: 60_000, cycle: 60 },
-  { label: "ثانية", ms: 1_000, cycle: 60 },
-] as const;
-
-const RING_RADIUS = 44;
-const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
-const RING_GRADIENT_ID = "countdown-ring-gold";
-
-function CountdownRing({
-  value,
-  cycle,
-  label,
-}: {
-  value: number | null;
-  cycle: number;
-  label: string;
-}) {
-  const progress = value === null ? 1 : Math.min(value / cycle, 1);
-  const text = value === null ? "--" : String(value).padStart(2, "0");
+function CoupleScene() {
   return (
-    <div className="countdown-unit flex flex-col items-center">
-      <div className="relative aspect-square w-full max-w-[4.5rem]">
-        <div className="countdown-face absolute inset-[9%] rounded-full" />
-        <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90" aria-hidden="true">
-          <circle
-            cx="50"
-            cy="50"
-            r={RING_RADIUS}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="text-gold/25"
+    <section className="scene-couple relative h-[300svh]" aria-label="محمد وضحى">
+      <div className="bg-silk sticky top-0 h-svh overflow-hidden">
+        <FloatingOrbs />
+        <div className="couple-glow hero-bloom absolute inset-0 opacity-80" />
+        <div className="couple-rays pointer-events-none absolute left-1/2 top-[48%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2" />
+        <div className="couple-sparkles absolute inset-0">
+          <Sparkles count={14} />
+        </div>
+
+        {/* Names stay centered above — never clipped at edges */}
+        <div className="couple-intro absolute inset-x-0 top-[9svh] z-30 px-5 text-center lg:top-[7svh]">
+          <p className="couple-caption font-display text-xl text-sage lg:text-3xl">
+            وتلاقت القلوب على بركة الله
+          </p>
+          <div className="couple-names mt-2">
+            <CoupleNames size="inline" />
+          </div>
+        </div>
+
+        <svg
+          viewBox="0 0 200 300"
+          preserveAspectRatio="none"
+          className="couple-arch pointer-events-none absolute bottom-[7svh] left-1/2 h-[60svh] w-[min(92vw,32rem)] -translate-x-1/2 text-rose/60 lg:bottom-[2svh] lg:h-[80svh] lg:w-[42rem]"
+          aria-hidden="true"
+        >
+          <path
+            className="couple-arch-path couple-arch-outer"
+            d="M8 300 V98 A92 92 0 0 1 192 98 V300"
+            pathLength={1}
           />
-          <circle
-            cx="50"
-            cy="50"
-            r={RING_RADIUS}
-            fill="none"
-            stroke={`url(#${RING_GRADIENT_ID})`}
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeDasharray={RING_LENGTH}
-            strokeDashoffset={RING_LENGTH * (1 - progress)}
-            className="transition-[stroke-dashoffset] duration-700 ease-out"
+          <path
+            className="couple-arch-path couple-arch-inner opacity-45"
+            d="M22 300 V104 A78 78 0 0 1 178 104 V300"
+            pathLength={1}
           />
         </svg>
-        <span
-          key={text}
-          className="animate-tick absolute inset-0 flex items-center justify-center font-latin text-[1.7rem] leading-none text-gold tabular-nums lining-nums"
+
+        <div className="couple-floor absolute bottom-[6svh] left-1/2 h-9 w-[min(82vw,30rem)] -translate-x-1/2 rounded-[50%] lg:bottom-[1.5svh] lg:h-14 lg:w-[42rem]" />
+
+        <div
+          className="couple-stage absolute inset-x-0 bottom-[8svh] flex h-[48svh] origin-bottom items-end justify-center lg:bottom-[2.5svh] lg:h-[66svh]"
+          dir="ltr"
         >
-          {text}
-        </span>
+          <div className="couple-bride relative h-[95%]">
+            <img
+              src={bride}
+              alt="العروس ضحى"
+              width={555}
+              height={1014}
+              loading="lazy"
+              decoding="async"
+              className="couple-step h-full w-auto max-w-none"
+            />
+          </div>
+          <div className="couple-groom relative -ml-[2.8svh] h-full">
+            <img
+              src={groom}
+              alt="العريس محمد"
+              width={381}
+              height={1113}
+              loading="lazy"
+              decoding="async"
+              className="couple-step h-full w-auto max-w-none"
+            />
+          </div>
+          <div className="couple-burst pointer-events-none absolute left-1/2 top-[4%]" aria-hidden="true" />
+          <WeddingRings className="couple-rings heart-beat absolute left-1/2 top-[2%] w-[4.5rem] -translate-x-1/2 -translate-y-[85%] drop-shadow-md lg:w-24" />
+        </div>
+
+        <div className="couple-veil pointer-events-none absolute inset-0 z-20" />
       </div>
-      <span className="mt-2 text-xs text-muted-foreground">{label}</span>
-    </div>
+    </section>
   );
 }
 
+function Letter() {
+  return (
+    <section className="scene-letter bg-paper px-5 py-16 lg:py-28">
+      <div className="letter-card relative mx-auto max-w-xl rounded-[2.2rem] border border-border bg-paper px-6 py-12 text-center shadow-lift lg:px-14 lg:py-16">
+        <div className="letter-frame pointer-events-none absolute inset-3 rounded-[1.7rem]" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.2rem]" aria-hidden="true">
+          <img
+            src={floral}
+            alt=""
+            width={900}
+            height={900}
+            loading="lazy"
+            decoding="async"
+            className="animate-sway absolute -right-10 -top-6 w-40 opacity-45 lg:w-52"
+            style={{ scale: "-1 1" }}
+          />
+          <img
+            src={floral}
+            alt=""
+            width={900}
+            height={900}
+            loading="lazy"
+            decoding="async"
+            className="absolute -bottom-10 -left-10 w-40 opacity-35 lg:w-48"
+            style={{ transform: "scaleY(-1)" }}
+          />
+        </div>
+
+        <p className="reveal relative font-display text-3xl text-rose lg:text-4xl">
+          بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+        </p>
+        <div className="reveal relative mx-auto mt-6 max-w-sm rounded-2xl border border-rose/15 bg-rose-soft/40 px-5 py-4">
+          <p className="text-balance text-lg leading-loose text-sage">
+            ﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنْفُسِكُمْ أَزْوَاجًا لِتَسْكُنُوا إِلَيْهَا ﴾
+          </p>
+        </div>
+        <Divider className="reveal relative my-8" />
+        <p className="reveal relative text-lg leading-loose">بكل الحب والسرور يتشرف</p>
+        <p className="reveal relative mt-4 font-display text-2xl lg:text-3xl">السيد اسماعيل سالم الكرمي</p>
+        <p className="reveal relative my-1 font-latin text-xl italic text-rose">&amp;</p>
+        <p className="reveal relative font-display text-xl leading-snug lg:text-2xl">
+          آل المرحوم محمدسعيد احمد البدور
+        </p>
+        <p className="reveal relative mt-5 text-lg">بدعوتكم لحضور حفل زفاف</p>
+        <div className="reveal relative mt-8">
+          <CoupleNames size="section" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PlaceCard({
+  place,
+  index,
+}: {
+  place: (typeof PLACES)[number];
+  index: number;
+}) {
+  const href = mapUrl(place.coords);
+  return (
+    <article
+      className={`place-card place-${place.accent} relative overflow-hidden rounded-[1.75rem] border border-border bg-paper shadow-lift`}
+      style={{ zIndex: 3 - index }}
+    >
+      <div className="place-glow pointer-events-none absolute -left-16 -top-16 h-44 w-44 rounded-full opacity-60" />
+      <div className="relative flex items-start justify-between gap-3 px-5 pt-5">
+        <div className="text-right">
+          <p className="font-latin text-sm tracking-[0.25em] text-rose/70">{place.step}</p>
+          <h3 className="mt-1 font-display text-3xl text-ink lg:text-4xl">{place.title}</h3>
+          <p className="mt-1 font-display text-lg text-rose">{place.event}</p>
+        </div>
+        <div className="place-time shrink-0 rounded-2xl border border-rose/25 bg-rose-soft/50 px-3 py-2 text-center">
+          <p className="font-latin text-3xl leading-none text-rose tabular-nums" dir="ltr">
+            {place.time}
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground">{place.timeLabel}</p>
+        </div>
+      </div>
+
+      <div className="relative mt-4 px-5">
+        <p className="font-display text-xl text-sage">{place.place}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{place.detail}</p>
+      </div>
+
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`افتح موقع ${place.title} على الخريطة`}
+        className="place-map group relative mt-5 block overflow-hidden"
+      >
+        <div className="relative h-44 overflow-hidden sm:h-52">
+          <iframe
+            title={`خريطة ${place.title}`}
+            src={mapEmbed(place.coords)}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="map-frame pointer-events-none absolute left-0 top-1/2 h-[calc(100%+12rem)] w-full -translate-y-[calc(50%-0.75rem)] border-0 transition duration-700 group-hover:scale-105"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-paper via-transparent to-transparent" />
+          <span className="absolute right-3 top-3 rounded-full border border-rose/30 bg-paper/95 px-3 py-1 text-xs text-rose">
+            خرائط جوجل
+          </span>
+        </div>
+        <div className="flex items-center gap-3 bg-paper px-5 py-3.5">
+          <span className="map-pin map-pin-pulse flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose text-primary-foreground">
+            <PinIcon />
+          </span>
+          <div className="min-w-0 flex-1 text-right">
+            <p className="font-display text-base">افتح الموقع</p>
+            <p className="text-xs text-muted-foreground">اضغط للاتجاهات</p>
+          </div>
+          <span className="shrink-0 text-sm text-rose transition group-hover:translate-x-[-2px]">
+            اتجاهات ←
+          </span>
+        </div>
+      </a>
+    </article>
+  );
+}
+
+function JourneyPlaces() {
+  return (
+    <section className="scene-places relative overflow-hidden bg-mist px-5 py-16 lg:py-28">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <span className="float-orb float-orb-a absolute left-[8%] top-[12%] h-48 w-48 opacity-30" />
+        <span className="float-orb float-orb-b absolute right-[5%] bottom-[18%] h-56 w-56 opacity-25" />
+      </div>
+
+      <div className="reveal relative mx-auto max-w-2xl text-center">
+        <p className="font-latin text-sm tracking-[0.35em] text-rose">JOURNEY</p>
+        <h2 className="mt-2 font-display text-4xl text-ink lg:text-5xl">مسيرة الفرح</h2>
+        <p className="mt-3 text-muted-foreground">ثلاث محطات… دار العريس، دار العروس، ثم الصالة</p>
+        <p className="mt-1 text-sm text-sage">الخميس 26 / 11 / 2026</p>
+      </div>
+
+      {/* Desktop journey path */}
+      <div className="reveal relative mx-auto mt-10 hidden max-w-3xl lg:block" aria-hidden="true">
+        <div className="journey-path relative mx-auto h-2 w-full max-w-xl overflow-hidden rounded-full bg-rose/15">
+          <span className="journey-path-fill absolute inset-y-0 right-0 w-full origin-right rounded-full bg-linear-to-l from-rose via-rose/80 to-sage/70" />
+        </div>
+        <div className="mt-3 flex justify-between px-2">
+          {PLACES.map((p) => (
+            <div key={p.id} className="journey-stop flex flex-col items-center gap-1">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-rose bg-paper font-latin text-sm text-rose">
+                {p.step}
+              </span>
+              <span className="font-display text-sm text-ink">{p.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative mx-auto mt-10 flex max-w-xl flex-col gap-8 lg:mt-14 lg:max-w-5xl lg:flex-row lg:items-stretch lg:gap-5">
+        {/* Mobile connecting rail */}
+        <span
+          className="journey-rail pointer-events-none absolute top-8 bottom-8 w-px origin-top bg-rose/35 lg:hidden"
+          style={{ right: "1.35rem" }}
+          aria-hidden="true"
+        />
+        {PLACES.map((place, index) => (
+          <div key={place.id} className="place-wrap relative flex-1">
+            <span className="absolute top-6 z-20 flex h-3.5 w-3.5 -translate-y-1/2 rounded-full border-2 border-rose bg-paper lg:hidden" style={{ right: "1.1rem" }} />
+            {index < PLACES.length - 1 && (
+              <div className="place-connector pointer-events-none absolute inset-x-0 -bottom-8 z-0 hidden justify-center lg:flex" aria-hidden="true">
+                <span className="font-display text-rose/50">⟵</span>
+              </div>
+            )}
+            <PlaceCard place={place} index={index} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const COUNTDOWN_UNITS = [
+  { label: "يوم", ms: 86_400_000 },
+  { label: "ساعة", ms: 3_600_000 },
+  { label: "دقيقة", ms: 60_000 },
+  { label: "ثانية", ms: 1_000 },
+] as const;
+
 function Countdown() {
-  // Starts as null so the server render and the first client render match.
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -379,493 +679,87 @@ function Countdown() {
     return () => clearInterval(id);
   }, []);
 
-  let content: ReactNode;
+  let body: ReactNode;
   if (now !== null && now >= EVENT_END.getTime()) {
-    content = <p className="py-4 text-lg text-olive">تمّت الجاهة بحمد الله، شكراً لحضوركم</p>;
+    body = <p className="py-6 text-lg text-sage">تمّ العرس بحمد الله، شكراً لحضوركم</p>;
   } else if (now !== null && now >= EVENT_START.getTime()) {
-    content = <p className="py-4 text-lg text-olive">الجاهة قائمة الآن، بانتظاركم</p>;
+    body = <p className="py-6 text-lg text-sage">الحفل قائم الآن، بانتظاركم</p>;
   } else {
     let remaining = now === null ? null : EVENT_START.getTime() - now;
-    content = (
-      <div className="grid grid-cols-4 gap-2" dir="ltr" role="timer" aria-live="off">
-        {COUNTDOWN_UNITS.map(({ label, ms, cycle }) => {
+    body = (
+      <div className="grid grid-cols-4 gap-3" dir="ltr" role="timer" aria-live="off">
+        {COUNTDOWN_UNITS.map(({ label, ms }) => {
           let value: number | null = null;
           if (remaining !== null) {
             value = Math.floor(remaining / ms);
             remaining -= value * ms;
           }
-          return <CountdownRing key={label} value={value} cycle={cycle} label={label} />;
+          const text = value === null ? "--" : String(value).padStart(2, "0");
+          return (
+            <div key={label} className="countdown-unit flex flex-col items-center">
+              <div className="countdown-face flex aspect-square w-full max-w-[4.4rem] items-center justify-center rounded-2xl border border-border">
+                <span key={text} className="animate-tick font-latin text-2xl text-rose tabular-nums">
+                  {text}
+                </span>
+              </div>
+              <span className="mt-2 text-xs text-muted-foreground">{label}</span>
+            </div>
+          );
         })}
       </div>
     );
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-gold/40 bg-ivory/60 px-3 pb-5 pt-6 shadow-sm">
-      <div className="pointer-events-none absolute inset-1.5 rounded-[1.7rem] border border-gold/20" />
-      <div className="pointer-events-none absolute inset-x-10 -top-8 h-20 rounded-b-full bg-glow opacity-70" />
-      <svg width="0" height="0" className="absolute" aria-hidden="true">
-        <defs>
-          <linearGradient id={RING_GRADIENT_ID} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="oklch(0.62 0.08 70)" />
-            <stop offset="0.5" stopColor="oklch(0.86 0.07 88)" />
-            <stop offset="1" stopColor="oklch(0.66 0.09 72)" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <div className="relative mb-5 flex items-center justify-center gap-2 sm:gap-3">
-        <span className="gold-line hidden w-8 sm:block" />
-        <Star size={12} className="shrink-0" />
-        <p className="whitespace-nowrap font-display text-lg text-olive sm:text-xl">
-          العدّ التنازلي لفرحتنا
-        </p>
-        <Star size={12} className="shrink-0" />
-        <span className="gold-line hidden w-8 sm:block" />
-      </div>
-      <div className="relative">{content}</div>
+    <div className="reveal mx-auto max-w-md rounded-[1.85rem] border border-border bg-paper px-4 py-8 text-center shadow-soft">
+      <p className="mb-6 font-display text-xl text-sage lg:text-2xl">العدّ التنازلي لفرحتنا</p>
+      {body}
     </div>
   );
 }
 
-function ArchFrames({ desktopArch = true }: { desktopArch?: boolean }) {
-  const outer = desktopArch
-    ? "rounded-t-[999px] rounded-b-none lg:rounded-b-[2.6rem]"
-    : "rounded-[2.6rem] lg:rounded-t-[999px]";
-  const inner = desktopArch
-    ? "rounded-t-[999px] rounded-b-none lg:rounded-b-[2.2rem]"
-    : "rounded-[2.2rem] lg:rounded-t-[999px]";
+function Closing() {
   return (
-    <>
-      <div className={`pointer-events-none absolute inset-2 border border-gold/40 ${outer}`} />
-      <div className={`pointer-events-none absolute inset-4 border border-gold/20 ${inner}`} />
-    </>
-  );
-}
+    <section className="scene-closing bg-mist px-5 pb-28 pt-16 lg:pb-28 lg:pt-24">
+      <Countdown />
 
-function InvitationPage() {
-  return (
-    <div className="relative h-full overflow-hidden rounded-t-[999px] border border-gold/50 bg-pearl px-6 pb-16 pt-28 text-center shadow-card lg:flex lg:flex-col lg:justify-center lg:rounded-b-[3rem] lg:px-12 lg:pt-36">
-      <ArchFrames />
-      <div className="pointer-events-none absolute inset-x-10 top-0 h-40 rounded-b-full bg-glow opacity-70" />
-      <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 lg:top-10">
-        <Star size={46} />
-      </div>
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="animate-sway absolute -right-8 -top-4 w-52 opacity-95 lg:w-64"
-        // `scale` instead of `transform`, which the sway animation overrides.
-        style={{ scale: "-1 1" }}
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="animate-sway absolute -left-8 -top-4 w-52 opacity-95 lg:w-64"
-        style={{ animationDelay: "1.2s" }}
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -bottom-10 -right-10 w-48 opacity-60 lg:w-56"
-        style={{ transform: "scaleY(-1) scaleX(-1)" }}
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -bottom-10 -left-10 w-48 opacity-60 lg:w-56"
-        style={{ transform: "scaleY(-1)" }}
-      />
-
-      <div className="relative">
-        <p className="reveal font-display text-gold-gradient text-4xl leading-snug lg:text-5xl">
-          بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-        </p>
-        <div className="reveal mx-auto mt-6 max-w-[19rem] rounded-2xl border border-gold/30 bg-ivory/70 px-5 py-4 shadow-sm lg:max-w-sm">
-          <p className="text-balance text-lg leading-loose text-olive">
-            <span className="whitespace-nowrap">﴿ وَمِنْ</span> آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ
-            أَنْفُسِكُمْ أَزْوَاجًا لِتَسْكُنُوا{" "}
-            <span className="whitespace-nowrap">إِلَيْهَا ﴾</span>
-          </p>
-        </div>
-        <Ornament className="reveal my-8" />
-        <p className="reveal text-lg leading-loose">بكل الحب والسرور، وقلوب يملؤها الفرح، يتشرف</p>
-        <p className="reveal mt-4 font-display text-3xl">السيد إبراهيم البريجي</p>
-        <p className="reveal my-1 font-latin text-2xl italic text-gold">&amp;</p>
-        <p className="reveal font-display text-3xl">السيد سليمان أبو ليل</p>
-        <p className="reveal mt-5 text-lg">بدعوتكم لحضور خطوبة</p>
-
-        <div className="names relative my-12 py-8">
-          <Sparkles count={12} />
-          <img
-            src={rose}
-            decoding="async"
-            alt=""
-            width={640}
-            height={640}
-            loading="lazy"
-            className="bloom absolute left-1/2 top-1/2 -ml-40 -mt-40 h-80 w-80"
-          />
-          <div className="relative">
-            <p className="reveal font-display text-gold-gradient names-ink text-8xl leading-tight">
-              بلال
-            </p>
-            <div className="reveal mt-5 flex items-center justify-center gap-3">
-              <span className="gold-line w-10" />
-              <span className="font-latin text-4xl italic text-[oklch(0.55_0.09_68)]">&amp;</span>
-              <span className="gold-line w-10" />
-            </div>
-            {/* Aref Ruqaa leaves empty room above رَوان (no tall letters), so pull it up. */}
-            <p className="reveal -mt-8 font-display text-gold-gradient names-ink text-8xl leading-tight">
-              روان
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// A non-interactive map preview; the whole card opens Google Maps so the
-// embedded map never swallows scroll gestures on phones.
-function VenueMap() {
-  return (
-    <a
-      href={VENUE_MAP_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="افتح موقع الدارة على خرائط جوجل"
-      className="group relative block overflow-hidden rounded-[1.75rem] border border-gold/50 bg-ivory text-right shadow-card transition duration-500 hover:-translate-y-1"
-    >
-      <div className="relative h-48 overflow-hidden lg:h-56">
-        <iframe
-          title="خريطة موقع الدارة"
-          src={VENUE_MAP_EMBED_URL}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          tabIndex={-1}
-          aria-hidden="true"
-          // Oversized so Google's coordinates card sits outside the visible area, and
-          // nudged down so the pin's head (drawn above the exact point) is centered.
-          className="map-frame pointer-events-none absolute left-0 top-1/2 h-[calc(100%+14rem)] w-full -translate-y-[calc(50%-1rem)] border-0 transition duration-700 group-hover:scale-105"
-        />
-        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_28px_oklch(0.95_0.03_85/0.75)]" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-linear-to-t from-pearl to-transparent" />
-        <span className="absolute right-3 top-3 rounded-full border border-gold/40 bg-pearl/95 px-3 py-1 text-xs text-gold shadow-sm">
-          خرائط جوجل
-        </span>
-      </div>
-      <div className="relative flex items-center gap-3 bg-pearl px-4 py-3">
-        <span className="map-pin flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold text-primary-foreground shadow-card">
-          <PinIcon />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="font-display text-lg leading-tight text-foreground">الموقع على الخريطة</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">اضغط لفتح الاتجاهات</p>
-        </div>
-        <span className="shrink-0 rounded-full border border-gold/60 px-3 py-1.5 text-sm text-gold transition group-hover:bg-gold group-hover:text-primary-foreground">
-          افتح الخريطة
-        </span>
-      </div>
-    </a>
-  );
-}
-
-function DetailsPage() {
-  return (
-    <div className="relative h-full overflow-hidden rounded-[3rem] border border-gold/50 bg-pearl px-6 py-14 text-center shadow-card lg:flex lg:flex-col lg:justify-center lg:rounded-t-[999px] lg:px-12 lg:pt-36">
-      <ArchFrames desktopArch={false} />
-      <div className="pointer-events-none absolute inset-x-16 -top-10 h-32 rounded-b-full bg-glow opacity-80 lg:inset-x-10 lg:top-0 lg:h-40" />
-      <div className="pointer-events-none absolute left-1/2 top-10 hidden -translate-x-1/2 lg:block">
-        <Star size={46} />
-      </div>
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -left-8 -top-8 w-40 opacity-70 lg:animate-sway lg:-top-4 lg:w-64 lg:opacity-95"
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -right-8 -top-4 hidden w-64 opacity-95 lg:block lg:animate-sway"
-        style={{ scale: "-1 1", animationDelay: "1.2s" }}
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -bottom-8 -right-8 w-40 opacity-70 lg:-bottom-10 lg:-right-10 lg:w-56 lg:opacity-60"
-        style={{ transform: "scale(-1)" }}
-      />
-      <img
-        src={floral}
-        decoding="async"
-        alt=""
-        width={900}
-        height={900}
-        loading="lazy"
-        className="absolute -bottom-10 -left-10 hidden w-56 opacity-60 lg:block"
-        style={{ transform: "scaleY(-1)" }}
-      />
-
-      <div className="relative">
-        <Ornament className="reveal mb-8" />
-        <p className="reveal font-display text-2xl text-olive">الاثنين</p>
-        <div
-          className="reveal mx-auto mt-4 flex items-center justify-center gap-4"
-          dir="ltr"
-          aria-label="19/10/2026"
-        >
-          <span className="count-up font-latin text-6xl text-gold-gradient tabular-nums">19</span>
-          <span className="h-10 w-px bg-gold/50" />
-          <span className="count-up font-latin text-6xl text-gold-gradient tabular-nums">10</span>
-          <span className="h-10 w-px bg-gold/50" />
-          <span className="count-up font-latin text-6xl text-gold-gradient tabular-nums">2026</span>
-        </div>
-        <p className="reveal mt-5 text-lg">من الساعة 7:00 مساءً حتى 9:00 مساءً</p>
-        <div className="ornament reveal my-7 flex items-center justify-center gap-3">
-          <span className="gold-line w-16" />
-          <Star size={16} />
-          <span className="gold-line w-16" />
-        </div>
-        <p className="reveal font-display text-3xl">{VENUE}</p>
-        <div className="reveal mt-6">
-          <VenueMap />
-        </div>
-
-        <div className="reveal mt-9">
-          <Countdown />
-        </div>
-
-        <p className="reveal mt-9 font-display text-gold-gradient text-4xl leading-snug">
-          بحضوركم تكتمل فرحتنا
-        </p>
-
-        <div className="details-actions reveal mt-10 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={share}
-            className="btn-shine relative overflow-hidden rounded-full bg-gold px-6 py-3.5 font-bold text-primary-foreground shadow-card transition hover:-translate-y-0.5 hover:opacity-90"
-          >
-            مشاركة الدعوة عبر واتساب
-          </button>
-          <button
-            type="button"
-            onClick={saveCalendar}
-            className="rounded-full border-2 border-gold px-6 py-3.5 text-gold transition hover:-translate-y-0.5 hover:bg-gold/10"
-          >
-            حفظ الموعد في التقويم
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BookSpine() {
-  return (
-    <div
-      className="spine relative hidden w-24 shrink-0 items-center justify-center lg:flex"
-      aria-hidden="true"
-    >
-      <div className="flex h-full flex-col items-center gap-4 py-12">
-        <span className="w-px flex-1 bg-linear-to-b from-transparent to-gold" />
-        <span className="font-latin text-3xl italic text-gold">B</span>
-        <div className="rounded-full border border-gold/50 bg-pearl p-3 shadow-card">
-          <Star size={26} />
-        </div>
-        <span className="font-latin text-3xl italic text-gold">R</span>
-        <span className="w-px flex-1 bg-linear-to-t from-transparent to-gold" />
-      </div>
-    </div>
-  );
-}
-
-// Pure CSS so it plays from the server-rendered HTML, before any script loads.
-// It never takes pointer events, so it can't block the page if it lingers.
-function Splash() {
-  return (
-    <div
-      className="splash pointer-events-none fixed inset-0 z-50 flex flex-col items-center justify-center bg-pearl motion-reduce:hidden"
-      aria-hidden="true"
-    >
-      <div className="bg-glow absolute inset-0 opacity-60" />
-      <div className="relative flex h-44 w-44 items-center justify-center lg:h-60 lg:w-60">
-        <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90">
-          <circle cx="50" cy="50" r="47" className="splash-ring" />
-          <circle cx="50" cy="50" r="43" className="splash-ring splash-ring-inner" />
-        </svg>
-        <p className="splash-mono font-latin text-gold-gradient text-5xl italic lg:text-7xl">
-          B &amp; R
-        </p>
-      </div>
-      <p className="splash-sub relative mt-8 font-display text-xl text-olive lg:text-2xl">
-        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      <p className="reveal closing-wish mt-14 text-center font-display text-3xl text-rose lg:text-5xl">
+        بحضوركم تكتمل فرحتنا
       </p>
-      <span className="gold-line absolute inset-x-0 bottom-0" />
-    </div>
-  );
-}
 
-// The date is wrapped in LTR isolates (U+2066…U+2069) so the Arabic around it doesn't reverse it.
-const SEAL_TEXT = "بلال & روان ✦ \u206619 · 10 · 2026\u2069 ✦ ";
-const SEAL_TEXT_RADIUS = 81;
-
-// The opening medallion: a slowly turning ring of text around the monogram.
-// The centre disc is sized relative to the seal so it never overlaps the text ring.
-function Seal() {
-  return (
-    <div className="relative flex h-[19rem] w-[19rem] items-center justify-center lg:h-[30rem] lg:w-[30rem]">
-      <div className="bg-glow absolute -inset-20 opacity-90" />
-      <svg
-        viewBox="0 0 200 200"
-        className="seal-ring absolute inset-0 overflow-visible text-gold"
-        aria-hidden="true"
-      >
-        <defs>
-          <path
-            id="seal-text-path"
-            d={`M100 100 m-${SEAL_TEXT_RADIUS} 0 a${SEAL_TEXT_RADIUS} ${SEAL_TEXT_RADIUS} 0 1 1 ${SEAL_TEXT_RADIUS * 2} 0 a${SEAL_TEXT_RADIUS} ${SEAL_TEXT_RADIUS} 0 1 1 -${SEAL_TEXT_RADIUS * 2} 0`}
-          />
-        </defs>
-        <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" strokeWidth="0.8" />
-        <circle
-          cx="100"
-          cy="100"
-          r="94"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.4"
-          opacity="0.6"
-        />
-        <circle
-          cx="100"
-          cy="100"
-          r="73"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="0.5 3"
-          strokeLinecap="round"
-        />
-        {/* LTR so the text starts at the path start instead of being pushed off its end;
-            textLength spreads it evenly around the whole circle. */}
-        <text className="font-display" fontSize="13" fill="currentColor" direction="ltr">
-          <textPath
-            href="#seal-text-path"
-            textLength={2 * Math.PI * SEAL_TEXT_RADIUS}
-            lengthAdjust="spacing"
-          >
-            {SEAL_TEXT.repeat(3)}
-          </textPath>
-        </text>
-      </svg>
-      <Star size={26} className="absolute -top-3 left-1/2 -translate-x-1/2 drop-shadow-sm" />
-      <div className="relative flex aspect-square w-[66%] flex-col items-center justify-center rounded-full border border-gold/40 bg-pearl shadow-card">
-        <div className="pointer-events-none absolute inset-2 rounded-full border border-gold/25" />
-        <p className="font-latin text-gold-gradient text-5xl italic leading-none lg:text-7xl">
-          B &amp; R
-        </p>
-        <Ornament className="my-3 lg:my-5" />
-        <h1 className="font-display text-xl text-foreground lg:text-3xl">دعوة جاهة كريمة</h1>
-      </div>
-    </div>
-  );
-}
-
-// Phones stack the two pages; this ties them together so the gap reads as one piece.
-function CardSeam() {
-  return (
-    <div className="relative flex h-24 items-center justify-center lg:hidden" aria-hidden="true">
-      {["left-12", "right-12"].map((side) => (
-        <span key={side} className={`absolute inset-y-0 ${side} flex flex-col items-center`}>
-          <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-          <span className="w-px flex-1 bg-linear-to-b from-gold to-gold/40" />
-          <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-        </span>
-      ))}
-      <div className="reveal flex items-center gap-3">
-        <span className="gold-line w-10" />
-        <div
-          className="flex items-center gap-2.5 rounded-full border border-gold/50 bg-pearl px-4 py-1.5 shadow-card"
-          dir="ltr"
+      <div className="details-actions reveal mx-auto mt-10 flex max-w-md flex-col gap-3">
+        <button
+          type="button"
+          onClick={share}
+          className="btn-primary btn-shine rounded-2xl px-6 py-3.5 font-bold"
         >
-          <span className="font-latin text-2xl italic text-gold">B</span>
-          <Star size={18} />
-          <span className="font-latin text-2xl italic text-gold">R</span>
-        </div>
-        <span className="gold-line w-10" />
+          مشاركة الدعوة عبر واتساب
+        </button>
+        <button type="button" onClick={saveCalendar} className="btn-ghost rounded-2xl px-6 py-3.5">
+          حفظ الموعد في التقويم
+        </button>
       </div>
-    </div>
+
+      <div className="reveal mt-16 text-center">
+        <Divider />
+        <div className="animate-float mt-7">
+          <CoupleNames size="section" />
+        </div>
+      </div>
+    </section>
   );
 }
 
-type ActionBarItemProps = { label: string; icon: ReactNode } & (
-  { href: string } | { onClick: () => void }
-);
-
-function ActionBarItem(props: ActionBarItemProps) {
-  const className =
-    "flex flex-1 flex-col items-center gap-0.5 rounded-full py-1.5 text-gold transition active:scale-90";
-  const content = (
-    <>
-      {props.icon}
-      <span className="text-[11px] text-foreground/80">{props.label}</span>
-    </>
-  );
-  if ("href" in props) {
-    return (
-      <a href={props.href} target="_blank" rel="noopener noreferrer" className={className}>
-        {content}
-      </a>
-    );
-  }
-  return (
-    <button type="button" onClick={props.onClick} className={className}>
-      {content}
-    </button>
-  );
-}
-
-// Phone-only floating shortcuts, shown between the doors and the main action buttons.
-function MobileActionBar() {
+function MobileBar() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const doors = document.querySelector(".scene-doors");
+    const hero = document.querySelector(".scene-hero");
     const actions = document.querySelector(".details-actions");
     let actionsInView = false;
     const update = () => {
-      const pastDoors = doors
-        ? doors.getBoundingClientRect().bottom < window.innerHeight * 0.5
-        : true;
-      setVisible(pastDoors && !actionsInView);
+      const pastHero = hero ? hero.getBoundingClientRect().bottom < window.innerHeight * 0.35 : true;
+      setVisible(pastHero && !actionsInView);
     };
     const observer = new IntersectionObserver(([entry]) => {
       actionsInView = entry?.isIntersecting ?? false;
@@ -885,40 +779,63 @@ function MobileActionBar() {
       aria-label="اختصارات الدعوة"
       inert={!visible}
       className={`fixed inset-x-4 z-30 transition-all duration-500 ease-out lg:hidden ${
-        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[160%] opacity-0"
+        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[150%] opacity-0"
       }`}
-      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+      style={{ bottom: "calc(0.85rem + env(safe-area-inset-bottom))" }}
     >
-      <div className="mx-auto flex max-w-sm items-center rounded-full border border-gold/40 bg-pearl/95 px-3 py-1.5 shadow-card">
-        <ActionBarItem label="مشاركة" icon={<ChatIcon />} onClick={share} />
-        <span className="h-8 w-px bg-gold/25" />
-        <ActionBarItem label="الموقع" icon={<PinIcon />} href={VENUE_MAP_URL} />
-        <span className="h-8 w-px bg-gold/25" />
-        <ActionBarItem label="التقويم" icon={<CalendarIcon />} onClick={saveCalendar} />
+      <div className="mx-auto flex max-w-sm items-center rounded-2xl border border-border bg-paper/95 px-2 py-1.5 shadow-lift backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={share}
+          className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-rose active:scale-90"
+        >
+          <ChatIcon />
+          <span className="text-[11px] text-foreground/75">مشاركة</span>
+        </button>
+        <span className="h-7 w-px bg-border" />
+        <a
+          href={VENUE_MAP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-rose active:scale-90"
+        >
+          <PinIcon />
+          <span className="text-[11px] text-foreground/75">الموقع</span>
+        </a>
+        <span className="h-7 w-px bg-border" />
+        <button
+          type="button"
+          onClick={saveCalendar}
+          className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-rose active:scale-90"
+        >
+          <CalendarIcon />
+          <span className="text-[11px] text-foreground/75">التقويم</span>
+        </button>
       </div>
     </nav>
   );
 }
 
 const CONFETTI_COLORS = [
-  "oklch(0.74 0.12 82)",
-  "oklch(0.6 0.1 70)",
-  "oklch(0.82 0.11 90)",
-  "oklch(0.72 0.08 40)",
+  "oklch(0.62 0.13 12)",
+  "oklch(0.72 0.09 30)",
+  "oklch(0.55 0.1 15)",
+  "oklch(0.78 0.05 175)",
+  "oklch(0.85 0.06 40)",
 ];
 
 function burstConfetti(gsap: typeof GsapInstance) {
   const host = document.querySelector(".couple-burst");
   if (!host) return;
-  const count = 28;
+  const count = 34;
   for (let i = 0; i < count; i++) {
     const piece = document.createElement("span");
     piece.className = "confetti";
     piece.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length] ?? "";
     if (i % 3 === 0) piece.style.borderRadius = "999px";
     host.appendChild(piece);
-    const angle = (i / count) * Math.PI * 2 + gsap.utils.random(-0.2, 0.2);
-    const distance = gsap.utils.random(70, 180);
+    const angle = (i / count) * Math.PI * 2 + gsap.utils.random(-0.25, 0.25);
+    const distance = gsap.utils.random(80, 200);
     gsap
       .timeline({ onComplete: () => piece.remove() })
       .fromTo(
@@ -926,14 +843,20 @@ function burstConfetti(gsap: typeof GsapInstance) {
         { x: 0, y: 0, scale: 0, rotate: 0, opacity: 1 },
         {
           x: Math.cos(angle) * distance,
-          y: Math.sin(angle) * distance * 0.7 - 30,
-          scale: gsap.utils.random(0.7, 1.4),
-          rotate: gsap.utils.random(-260, 260),
-          duration: 0.7,
+          y: Math.sin(angle) * distance * 0.65 - 40,
+          scale: gsap.utils.random(0.7, 1.5),
+          rotate: gsap.utils.random(-280, 280),
+          duration: 0.75,
           ease: "power3.out",
         },
       )
-      .to(piece, { y: "+=140", rotate: "+=140", opacity: 0, duration: 1.4, ease: "power1.in" });
+      .to(piece, {
+        y: "+=150",
+        rotate: "+=160",
+        opacity: 0,
+        duration: 1.5,
+        ease: "power1.in",
+      });
   }
 }
 
@@ -950,45 +873,169 @@ function Invitation() {
         import("gsap"),
         import("gsap/ScrollTrigger"),
       ]);
-      // The effect may have been cleaned up (e.g. React StrictMode) while the imports were loading.
       if (cancelled || !root.current) return;
       gsap.registerPlugin(ScrollTrigger);
 
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
       ctx = gsap.context(() => {
-        // Scene 1: doors
+        if (reduce) return;
+
+        // Ambient floating orbs
+        gsap.utils.toArray<HTMLElement>(".float-orb").forEach((orb, i) => {
+          gsap.to(orb, {
+            y: gsap.utils.random(-28, 28),
+            x: gsap.utils.random(-20, 20),
+            duration: gsap.utils.random(4.5, 7),
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: i * 0.4,
+          });
+        });
+
+        // Soft seal entrance after splash
+        gsap.from(".door-seal", {
+          scale: 0.82,
+          opacity: 0,
+          duration: 1.15,
+          delay: 2.15,
+          ease: "expo.out",
+        });
+
+        // Doors open on scroll
         gsap
           .timeline({
             scrollTrigger: {
               trigger: ".scene-doors",
               start: "top top",
               end: "bottom bottom",
-              scrub: 1,
+              scrub: 1.05,
             },
           })
-          .to(".door-intro", { opacity: 0, y: -30, duration: 0.25 }, 0)
-          .to(".door-left", { rotateY: -105, duration: 1, ease: "power2.inOut" }, 0.1)
-          .to(".door-right", { rotateY: 105, duration: 1, ease: "power2.inOut" }, 0.1)
+          .to(".door-intro", { opacity: 0, y: -28, duration: 0.22 }, 0)
+          .to(".door-left", { rotateY: -108, duration: 1, ease: "power2.inOut" }, 0.08)
+          .to(".door-right", { rotateY: 108, duration: 1, ease: "power2.inOut" }, 0.08)
           .fromTo(
             ".door-glow",
-            { opacity: 0.2, scale: 0.6 },
-            { opacity: 1, scale: 1.3, duration: 1 },
-            0.1,
+            { opacity: 0.25, scale: 0.65 },
+            { opacity: 1, scale: 1.35, duration: 1 },
+            0.08,
           )
           .fromTo(
             ".door-reveal",
-            { opacity: 0, scale: 0.85 },
-            { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" },
-            0.45,
+            { opacity: 0, scale: 0.88, filter: "blur(6px)" },
+            { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.55, ease: "power2.out" },
+            0.42,
           )
-          .to(".door-curtain", { scaleX: 0.15, opacity: 0, duration: 0.6 }, 0.7);
+          .to(".door-curtain", { scaleX: 0.12, opacity: 0, duration: 0.55 }, 0.65)
+          .to(".door-crack", { scaleX: 42, opacity: 0, duration: 0.45, ease: "power1.in" }, 0.05);
 
-        // Scene 2: text reveal
+        gsap.from(".door-reveal .hero-name-groom", {
+          y: 28,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".scene-doors", start: "45% top", toggleActions: "play none none reverse" },
+        });
+        gsap.from(".door-reveal .hero-name-bride", {
+          y: 28,
+          opacity: 0,
+          duration: 0.8,
+          delay: 0.08,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".scene-doors", start: "45% top", toggleActions: "play none none reverse" },
+        });
+
+        // Couple cinematic scrub
+        gsap.set([".couple-arch-outer", ".couple-arch-inner"], {
+          strokeDasharray: 1,
+          strokeDashoffset: 1,
+        });
+
+        const couple = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: ".scene-couple",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1.15,
+          },
+        });
+
+        couple
+          .fromTo(".couple-caption", { opacity: 0.35, y: 10 }, { opacity: 1, y: 0, duration: 0.15 }, 0)
+          .from(".couple-stage", { scale: 0.84, duration: 0.7, ease: "power1.out" }, 0)
+          .from(
+            ".couple-bride",
+            { x: "-58vw", opacity: 0, duration: 0.58, ease: "power2.out" },
+            0.04,
+          )
+          .from(
+            ".couple-groom",
+            { x: "58vw", opacity: 0, duration: 0.58, ease: "power2.out" },
+            0.04,
+          )
+          .to(
+            ".couple-bride .couple-step",
+            { keyframes: { y: [0, -5, 0, -5, 0, -4, 0] }, duration: 0.58 },
+            0.04,
+          )
+          .to(
+            ".couple-groom .couple-step",
+            { keyframes: { y: [0, -7, 0, -7, 0, -5, 0] }, duration: 0.58 },
+            0.04,
+          )
+          .from(".couple-floor", { opacity: 0, scaleX: 0.25, duration: 0.5 }, 0.06)
+          .to(".couple-arch-outer", { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 0.38)
+          .to(".couple-arch-inner", { strokeDashoffset: 0, duration: 0.35, ease: "power1.inOut" }, 0.42)
+          .fromTo(
+            ".couple-glow",
+            { opacity: 0.2, scale: 0.65 },
+            { opacity: 1, scale: 1.12, duration: 0.35 },
+            0.4,
+          )
+          .from(".couple-rays", { opacity: 0, duration: 0.3 }, 0.52)
+          .from(
+            ".couple-rings",
+            { scale: 0, rotate: -55, opacity: 0, duration: 0.2, ease: "back.out(2.4)" },
+            0.56,
+          )
+          .call(
+            () => {
+              if (couple.scrollTrigger?.direction !== -1) burstConfetti(gsap);
+            },
+            [],
+            0.58,
+          )
+          .from(".couple-sparkles", { opacity: 0, duration: 0.2 }, 0.6)
+          .to(".couple-bride", { x: "1.1vw", duration: 0.16 }, 0.72)
+          .to(".couple-groom", { x: "-1.1vw", duration: 0.16 }, 0.72);
+
+        // Soft heartbeat on rings after they appear
+        ScrollTrigger.create({
+          trigger: ".scene-couple",
+          start: "60% top",
+          once: true,
+          onEnter: () => {
+            gsap.to(".couple-rings", {
+              scale: 1.08,
+              duration: 0.7,
+              yoyo: true,
+              repeat: -1,
+              ease: "sine.inOut",
+            });
+          },
+        });
+
+        // Soft reveals
         gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
           gsap.from(el, {
             opacity: 0,
-            y: 24,
-            duration: 1.1,
-            ease: "power2.out",
+            y: 32,
+            filter: "blur(4px)",
+            duration: 1.05,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: el,
               start: "top 88%",
@@ -996,17 +1043,102 @@ function Invitation() {
             },
           });
         });
-        gsap.fromTo(
-          ".bloom",
-          { scale: 0.2, rotate: -60, opacity: 0 },
-          {
-            scale: 1,
-            rotate: 0,
-            opacity: 0.4,
-            ease: "power1.out",
-            scrollTrigger: { trigger: ".names", start: "top 90%", end: "center 50%", scrub: 1 },
-          },
-        );
+
+        // Letter card cinematic lift
+        gsap.from(".letter-card", {
+          y: 56,
+          opacity: 0,
+          rotateX: 8,
+          transformPerspective: 1200,
+          duration: 1.25,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".letter-card", start: "top 88%" },
+        });
+
+        // Journey of three places
+        gsap.from(".journey-path-fill", {
+          scaleX: 0,
+          duration: 1.4,
+          ease: "power2.inOut",
+          scrollTrigger: { trigger: ".scene-places", start: "top 70%" },
+        });
+        gsap.from(".journey-stop", {
+          opacity: 0,
+          y: 16,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".scene-places", start: "top 70%" },
+        });
+        gsap.from(".journey-rail", {
+          scaleY: 0,
+          duration: 1.2,
+          ease: "power2.out",
+          scrollTrigger: { trigger: ".scene-places", start: "top 75%" },
+        });
+        gsap.from(".place-card", {
+          opacity: 0,
+          y: 50,
+          duration: 1.05,
+          stagger: 0.22,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".scene-places", start: "top 72%" },
+        });
+        gsap.from(".place-time", {
+          scale: 0.7,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.2,
+          ease: "back.out(1.8)",
+          scrollTrigger: { trigger: ".scene-places", start: "top 68%" },
+        });
+        gsap.utils.toArray<HTMLElement>(".place-card .map-pin").forEach((pin) => {
+          gsap.from(pin, {
+            y: -36,
+            opacity: 0,
+            duration: 1,
+            ease: "bounce.out",
+            scrollTrigger: { trigger: pin, start: "top 92%" },
+          });
+        });
+
+        // Countdown
+        const units = gsap.utils.toArray<HTMLElement>(".countdown-unit");
+        if (units[0]) {
+          gsap.from(units, {
+            scale: 0.35,
+            opacity: 0,
+            y: 20,
+            duration: 0.75,
+            stagger: 0.1,
+            ease: "back.out(1.9)",
+            scrollTrigger: { trigger: units[0], start: "top 90%" },
+          });
+        }
+
+        // Closing wish
+        gsap.from(".closing-wish", {
+          scale: 0.92,
+          opacity: 0,
+          duration: 1.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".closing-wish", start: "top 88%" },
+        });
+
+        // Ornaments
+        gsap.utils.toArray<HTMLElement>(".ornament").forEach((orn) => {
+          const lines = orn.querySelectorAll(".ornament-line");
+          const diamond = orn.querySelector(".ornament-diamond");
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: orn,
+              start: "top 92%",
+              toggleActions: "play none none reverse",
+            },
+          });
+          if (diamond) tl.from(diamond, { scale: 0, rotate: -120, duration: 0.55, ease: "back.out(2)" });
+          tl.from(lines, { scaleX: 0, duration: 0.85, ease: "power3.out" }, 0.1);
+        });
       }, root);
 
       const desktop = gsap.matchMedia(root.current);
@@ -1023,221 +1155,38 @@ function Invitation() {
               trigger: document.documentElement,
               start: "top top",
               end: "bottom bottom",
-              scrub: 0.3,
+              scrub: 0.2,
             },
           },
         );
-
-        // Light leaking through the seam floods out as the doors part.
-        gsap.to(".door-crack", {
-          scaleX: 40,
-          opacity: 0,
-          ease: "power1.in",
-          scrollTrigger: {
-            trigger: ".scene-doors",
-            start: "top top",
-            end: "35% top",
-            scrub: 1,
-          },
-        });
-
-        // Ornaments: the star spins in, then the lines grow out of it.
-        gsap.utils.toArray<HTMLElement>(".ornament").forEach((orn) => {
-          const star = orn.querySelector("svg");
-          if (!star) return;
-          const starX = star.getBoundingClientRect().left;
-          const lines = gsap.utils.toArray<HTMLElement>(orn.querySelectorAll(".gold-line"));
-          lines.forEach((line) => {
-            const fromStar = line.getBoundingClientRect().left >= starX ? "left" : "right";
-            gsap.set(line, { transformOrigin: `${fromStar} center` });
-          });
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: orn,
-                start: "top 92%",
-                toggleActions: "play none none reverse",
-              },
-            })
-            .from(star, { scale: 0, rotate: -180, duration: 0.8, ease: "back.out(2)" })
-            .from(lines, { scaleX: 0, duration: 0.9, ease: "power3.out" }, 0.2);
-        });
-
-        gsap.utils.toArray<HTMLElement>(".count-up").forEach((el) => {
-          const target = Number(el.textContent);
-          const counter = { v: target > 100 ? target - 26 : 0 };
-          gsap.to(counter, {
-            v: target,
-            duration: 1.8,
-            ease: "power2.out",
-            onUpdate: () => {
-              el.textContent = String(Math.round(counter.v)).padStart(2, "0");
-            },
-            scrollTrigger: { trigger: el, start: "top 88%", once: true },
-          });
-        });
-
-        gsap.from(".map-pin", {
-          y: -40,
-          opacity: 0,
-          duration: 1.1,
-          ease: "bounce.out",
-          scrollTrigger: {
-            trigger: ".map-pin",
-            start: "top 92%",
-            toggleActions: "play none none reverse",
-          },
-        });
-
-        // The units vanish once the event starts, so only animate them if present.
-        const units = gsap.utils.toArray<HTMLElement>(".countdown-unit");
-        const firstUnit = units[0];
-        if (firstUnit) {
-          gsap.from(units, {
-            scale: 0.4,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.12,
-            ease: "back.out(1.8)",
-            scrollTrigger: {
-              trigger: firstUnit,
-              start: "top 92%",
-              toggleActions: "play none none reverse",
-            },
-          });
-        }
-
-        // The couple walks in from both sides and meets under the arch.
-        const couple = gsap.timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: ".scene-couple",
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1,
-          },
-        });
-        couple
-          .to(".couple-intro", { opacity: 0, y: -24, duration: 0.12 }, 0.02)
-          .from(".couple-stage", { scale: 0.86, duration: 0.7, ease: "power1.out" }, 0)
-          .from(
-            ".couple-bride",
-            { x: "-62vw", opacity: 0, duration: 0.6, ease: "power2.out" },
-            0.04,
-          )
-          .from(".couple-groom", { x: "62vw", opacity: 0, duration: 0.6, ease: "power2.out" }, 0.04)
-          .to(
-            ".couple-bride .couple-step",
-            { keyframes: { y: [0, -4, 0, -4, 0, -4, 0] }, duration: 0.6 },
-            0.04,
-          )
-          .to(
-            ".couple-groom .couple-step",
-            { keyframes: { y: [0, -7, 0, -7, 0, -7, 0] }, duration: 0.6 },
-            0.04,
-          )
-          .from(".couple-floor", { opacity: 0, scaleX: 0.3, duration: 0.6 }, 0.04)
-          .fromTo(
-            ".couple-glow",
-            { opacity: 0.2, scale: 0.6 },
-            { opacity: 1, scale: 1.15, duration: 0.4 },
-            0.45,
-          )
-          .fromTo(
-            ".couple-arch",
-            { clipPath: "inset(100% 0% 0% 0%)" },
-            { clipPath: "inset(0% 0% 0% 0%)", duration: 0.35, ease: "power1.inOut" },
-            0.46,
-          )
-          .from(".couple-rays", { opacity: 0, rotate: -30, duration: 0.38 }, 0.62)
-          .from(
-            ".couple-rings",
-            { scale: 0, rotate: -50, opacity: 0, duration: 0.16, ease: "back.out(2.2)" },
-            0.62,
-          )
-          .call(
-            () => {
-              if (couple.scrollTrigger?.direction !== -1) burstConfetti(gsap);
-            },
-            [],
-            0.64,
-          )
-          .from(".couple-title > *", { opacity: 0, y: 26, duration: 0.14, stagger: 0.05 }, 0.66)
-          .from(".couple-name-bride", { opacity: 0, x: -60, duration: 0.18 }, 0.7)
-          .from(".couple-name-groom", { opacity: 0, x: 60, duration: 0.18 }, 0.7)
-          .from(".couple-sparkles", { opacity: 0, duration: 0.2 }, 0.7)
-          .to(".couple-bride", { x: "1.2vw", duration: 0.18 }, 0.8)
-          .to(".couple-groom", { x: "-1.2vw", duration: 0.18 }, 0.8);
       });
 
-      // Desktop: the two pages open like a book.
-      desktop.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
-        const trigger = { trigger: ".book", start: "top 70%" };
-        gsap.from(".page-right", {
-          xPercent: 14,
-          rotationY: -16,
-          transformPerspective: 1600,
-          transformOrigin: "left center",
-          opacity: 0,
-          duration: 1.5,
-          ease: "power3.out",
-          scrollTrigger: trigger,
-        });
-        gsap.from(".page-left", {
-          xPercent: -14,
-          rotationY: 16,
-          transformPerspective: 1600,
-          transformOrigin: "right center",
-          opacity: 0,
-          duration: 1.5,
-          delay: 0.15,
-          ease: "power3.out",
-          scrollTrigger: trigger,
-        });
-        gsap.from(".spine", {
-          scaleY: 0,
-          opacity: 0,
-          duration: 1.2,
-          delay: 0.4,
-          ease: "power2.out",
-          scrollTrigger: trigger,
-        });
-      });
-
-      // Desktop with a mouse: 3D tilt, cursor light and parallax flowers.
       desktop.add(
         "(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
         () => {
-          const tilts = gsap.utils.toArray<HTMLElement>(".tilt").map((el) => {
-            gsap.set(el, { transformPerspective: 1400 });
-            return {
-              rx: gsap.quickTo(el, "rotationX", { duration: 0.9, ease: "power3" }),
-              ry: gsap.quickTo(el, "rotationY", { duration: 0.9, ease: "power3" }),
-            };
-          });
           const layers = gsap.utils.toArray<HTMLElement>("[data-depth]").map((el) => {
             const depth = Number(el.dataset["depth"]);
             return {
               depth,
-              x: gsap.quickTo(el, "x", { duration: 1.4, ease: "power3" }),
-              y: gsap.quickTo(el, "y", { duration: 1.4, ease: "power3" }),
+              x: gsap.quickTo(el, "x", { duration: 1.35, ease: "power3" }),
+              y: gsap.quickTo(el, "y", { duration: 1.35, ease: "power3" }),
             };
           });
           const glow = document.querySelector<HTMLElement>(".cursor-glow");
           gsap.set(glow, { xPercent: -50, yPercent: -50, opacity: 0 });
-          const glowX = gsap.quickTo(glow, "x", { duration: 0.6, ease: "power3" });
-          const glowY = gsap.quickTo(glow, "y", { duration: 0.6, ease: "power3" });
+          const glowX = gsap.quickTo(glow, "x", { duration: 0.5, ease: "power3" });
+          const glowY = gsap.quickTo(glow, "y", { duration: 0.5, ease: "power3" });
 
-          // Gold dust trailing the cursor; throttled and capped so it stays cheap.
           const trail = document.createElement("div");
           trail.className = "pointer-events-none fixed inset-0 z-20 overflow-hidden";
           trail.setAttribute("aria-hidden", "true");
           root.current?.appendChild(trail);
           let lastDust = 0;
+
           const dropDust = (x: number, y: number) => {
-            const now = performance.now();
-            if (now - lastDust < 45 || trail.childElementCount > 22) return;
-            lastDust = now;
+            const t = performance.now();
+            if (t - lastDust < 40 || trail.childElementCount > 24) return;
+            lastDust = t;
             const dust = document.createElement("span");
             dust.className = "trail-dust";
             dust.style.left = `${x}px`;
@@ -1245,42 +1194,38 @@ function Invitation() {
             trail.appendChild(dust);
             gsap.fromTo(
               dust,
-              { scale: gsap.utils.random(0.6, 1.2), opacity: 0.95 },
+              { scale: gsap.utils.random(0.55, 1.2), opacity: 0.95 },
               {
-                x: gsap.utils.random(-18, 18),
-                y: gsap.utils.random(14, 46),
+                x: gsap.utils.random(-20, 20),
+                y: gsap.utils.random(10, 44),
                 scale: 0,
                 opacity: 0,
-                duration: gsap.utils.random(0.7, 1.2),
+                duration: gsap.utils.random(0.7, 1.25),
                 ease: "power1.out",
                 onComplete: () => dust.remove(),
               },
             );
           };
 
-          let glowShown = false;
+          let shown = false;
           const onMove = (e: MouseEvent) => {
             dropDust(e.clientX, e.clientY);
             const nx = e.clientX / window.innerWidth - 0.5;
             const ny = e.clientY / window.innerHeight - 0.5;
-            tilts.forEach((t) => {
-              t.ry(nx * 7);
-              t.rx(-ny * 5);
-            });
             layers.forEach((l) => {
               l.x(-nx * l.depth);
               l.y(-ny * l.depth);
             });
             glowX(e.clientX);
             glowY(e.clientY);
-            if (!glowShown) {
-              glowShown = true;
-              gsap.to(glow, { opacity: 1, duration: 0.6, overwrite: "auto" });
+            if (!shown) {
+              shown = true;
+              gsap.to(glow, { opacity: 1, duration: 0.45, overwrite: "auto" });
             }
           };
           const onLeave = () => {
-            glowShown = false;
-            gsap.to(glow, { opacity: 0, duration: 0.6, overwrite: "auto" });
+            shown = false;
+            gsap.to(glow, { opacity: 0, duration: 0.45, overwrite: "auto" });
           };
 
           window.addEventListener("mousemove", onMove, { passive: true });
@@ -1293,7 +1238,6 @@ function Invitation() {
         },
       );
 
-      // Web fonts change text heights after load, which shifts every trigger position.
       void document.fonts?.ready.then(() => {
         if (!cancelled) ScrollTrigger.refresh();
       });
@@ -1306,140 +1250,45 @@ function Invitation() {
     };
   }, []);
 
-  // Looping CSS animations keep repainting even when scrolled out of view; pause them there.
-  useEffect(() => {
-    const targets = root.current?.querySelectorAll(".text-gold-gradient, .sparkles");
-    if (!targets?.length) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => e.target.classList.toggle("is-offscreen", !e.isIntersecting));
-      },
-      { rootMargin: "100px 0px" },
-    );
-    targets.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <main ref={root} className="overflow-x-clip bg-background font-body text-foreground">
+    <main ref={root} className="bg-background font-body text-foreground">
       <Splash />
       <div
-        className="scroll-progress gold-line pointer-events-none fixed inset-x-0 top-0 z-40 h-[3px] origin-right motion-reduce:hidden"
+        className="scroll-progress pointer-events-none fixed inset-x-0 top-0 z-40 origin-right motion-reduce:hidden"
         style={{ transform: "scaleX(0)" }}
       />
-      <div className="cursor-glow pointer-events-none fixed left-0 top-0 z-20 hidden h-[36rem] w-[36rem] rounded-full opacity-0 lg:block" />
+      <div className="cursor-glow pointer-events-none fixed left-0 top-0 z-20 hidden h-[34rem] w-[34rem] rounded-full opacity-0 lg:block" />
       <Petals />
-
-      {/* Scene 1: doors */}
-      <section className="scene-doors relative h-[220svh]">
-        <div className="sticky top-0 h-svh overflow-hidden" style={{ perspective: "1600px" }}>
-          <div className="bg-silk door-curtain absolute inset-0 origin-center" />
-          <div className="door-glow bg-glow absolute inset-0" />
-          <Sparkles count={16} />
-          <div className="door-reveal absolute inset-0 flex flex-col items-center justify-center px-6 text-center opacity-0">
-            <p className="font-display text-xl text-olive lg:text-3xl">بكل الحب نزفّ إليكم</p>
-            <div className="mt-4 flex flex-col items-center lg:mt-8 lg:flex-row lg:gap-12">
-              <p className="font-display text-gold-gradient names-ink text-7xl leading-tight lg:text-[9rem]">
-                بلال
-              </p>
-              <span className="my-1 font-latin text-4xl italic text-[oklch(0.55_0.09_68)] lg:text-7xl">
-                &amp;
-              </span>
-              <p className="font-display text-gold-gradient names-ink text-7xl leading-tight lg:text-[9rem]">
-                روان
-              </p>
-            </div>
-            <Ornament className="mt-6 lg:mt-10" />
-            <p
-              className="mt-4 font-latin text-lg tracking-[0.3em] text-gold lining-nums lg:text-2xl"
-              dir="ltr"
-            >
-              19 · 10 · 2026
-            </p>
-          </div>
-          <Door side="left" />
-          <Door side="right" />
-          <div className="door-crack pointer-events-none absolute inset-y-0 left-1/2 w-1 -translate-x-1/2 motion-reduce:hidden">
-            <span className="door-crack-light absolute inset-0" />
-          </div>
-          <div className="door-dust pointer-events-none absolute inset-0 hidden lg:block">
-            <Sparkles count={10} />
-          </div>
-          <div className="door-intro pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-            <Seal />
-            <p className="mt-6 animate-pulse text-sm text-muted-foreground lg:hidden">
-              اسحب للأسفل لفتح الدعوة
-            </p>
-            <span className="mt-2 text-gold lg:hidden" aria-hidden="true">
-              ↓
-            </span>
-            <div className="mt-6 hidden flex-col items-center gap-3 lg:flex">
-              <span className="mouse-hint" aria-hidden="true" />
-              <p className="text-base text-muted-foreground">مرّر عجلة الفأرة لفتح الدعوة</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Scene 2: the bride and groom walk toward each other */}
+      <DoorHero />
       <CoupleScene />
-
-      {/* Scene 3: stacked cards on phones, an open book on desktop */}
-      <section className="book relative px-5 pb-28 lg:px-10 lg:pb-28 lg:pt-10">
-        <img
-          src={floral}
-          decoding="async"
-          alt=""
-          width={900}
-          height={900}
-          loading="lazy"
-          data-depth="40"
-          className="pointer-events-none absolute -right-16 top-0 hidden w-[24rem] opacity-40 lg:block"
-          style={{ scale: "-1 1" }}
-        />
-        <img
-          src={floral}
-          decoding="async"
-          alt=""
-          width={900}
-          height={900}
-          loading="lazy"
-          data-depth="28"
-          className="pointer-events-none absolute -left-16 bottom-0 hidden w-[24rem] opacity-40 lg:block"
-          style={{ scale: "1 -1" }}
-        />
-
-        <div className="relative mx-auto flex max-w-md flex-col lg:max-w-6xl lg:flex-row lg:items-stretch">
-          <div className="page-right lg:flex-1">
-            <div className="tilt h-full">
-              <InvitationPage />
-            </div>
-          </div>
-          <CardSeam />
-          <BookSpine />
-          <div className="page-left lg:flex-1">
-            <div className="tilt h-full">
-              <DetailsPage />
-            </div>
-          </div>
-        </div>
-
-        <div className="reveal relative mt-12 text-center lg:mt-20">
-          <Ornament />
-          <p className="mt-3 font-display text-gold-gradient text-5xl lg:text-7xl">
-            بلال &amp; روان
-          </p>
-        </div>
-      </section>
-
-      <MobileActionBar />
+      <Letter />
+      <JourneyPlaces />
+      <Closing />
+      <MobileBar />
     </main>
   );
 }
 
 function share() {
   const url = window.location.origin + window.location.pathname;
-  const text = `${TITLE}\nالاثنين 19/10/2026 الساعة 7:00 مساءً\n${VENUE}\nالموقع: ${VENUE_MAP_URL}\n\nالدعوة: ${url}`;
+  const text = [
+    TITLE,
+    "الخميس 26/11/2026",
+    "",
+    `① دار العريس — زفة العريس 6:30 مساءً`,
+    `${GROOM_AREA}`,
+    mapUrl(PLACES[0].coords),
+    "",
+    `② دار العروس — الفاردة 7:30 مساءً`,
+    `${BRIDE_AREA}`,
+    mapUrl(PLACES[1].coords),
+    "",
+    `③ الصالة — الحفل 8:30 حتى 11:00`,
+    `${VENUE}`,
+    VENUE_MAP_URL,
+    "",
+    `الدعوة: ${url}`,
+  ].join("\n");
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
 }
 
@@ -1454,18 +1303,19 @@ function saveCalendar() {
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Jaha//AR",
+    "PRODID:-//Urs//AR",
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
-    "UID:jaha-bilal-rawan-20261019@jaha",
+    "UID:urs-mohammad-duha-20261126@wedding",
     `DTSTAMP:${toIcsDate(new Date())}`,
     `DTSTART:${toIcsDate(EVENT_START)}`,
     `DTEND:${toIcsDate(EVENT_END)}`,
-    "SUMMARY:جاهة بلال وروان",
-    `LOCATION:${VENUE}`,
+    "SUMMARY:زفاف محمد وضحى",
+    `LOCATION:${VENUE} — أوتوستراد عمان الزرقاء`,
+    "DESCRIPTION:دار العريس (زفة 6:30) اسكان طلال\\nدار العروس (فاردة 7:30) اسكان هاشم\\nالصالة (8:30–11:00) قاعة أدونيس",
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
-    "DESCRIPTION:جاهة بلال وروان",
+    "DESCRIPTION:زفاف محمد وضحى",
     "TRIGGER:-PT3H",
     "END:VALARM",
     "END:VEVENT",
@@ -1474,10 +1324,9 @@ function saveCalendar() {
   const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = "jaha-bilal-rawan.ics";
+  a.download = "urs-mohammad-duha.ics";
   document.body.appendChild(a);
   a.click();
   a.remove();
-  // Revoking synchronously cancels the download in some browsers (notably Safari).
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
