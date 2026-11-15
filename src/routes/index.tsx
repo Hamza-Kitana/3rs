@@ -12,8 +12,11 @@ const TITLE = "دعوة زفاف — محمد وضحى";
 function mapUrl(coords: string) {
   return `https://www.google.com/maps?q=${coords}&z=17&hl=ar`;
 }
-function mapEmbed(coords: string) {
-  return `https://maps.google.com/maps?q=${coords}&hl=ar&z=16&output=embed`;
+
+/** Static mini-map preview — always visible (no blank iframe). */
+function mapPreview(coords: string) {
+  const [lat, lng] = coords.split(",");
+  return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=640x320&maptype=mapnik&markers=${lat},${lng},red-pushpin`;
 }
 
 type Place = {
@@ -596,33 +599,33 @@ function PlaceCard({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`افتح موقع ${place.title} على الخريطة`}
-        className="place-map group relative mt-5 block overflow-hidden"
+        className="place-map group relative mt-5 block overflow-hidden border-t border-border"
       >
-        <div className="relative h-44 overflow-hidden sm:h-52">
-          <iframe
-            title={`خريطة ${place.title}`}
-            src={mapEmbed(place.coords)}
+        <div className="relative h-40 overflow-hidden bg-mist sm:h-44">
+          <img
+            src={mapPreview(place.coords)}
+            alt={`خريطة ${place.title}`}
+            width={640}
+            height={320}
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            tabIndex={-1}
-            aria-hidden="true"
-            className="map-frame pointer-events-none absolute left-0 top-1/2 h-[calc(100%+12rem)] w-full -translate-y-[calc(50%-0.75rem)] border-0 transition duration-700 group-hover:scale-105"
+            decoding="async"
+            className="map-frame h-full w-full object-cover transition duration-700 group-hover:scale-105"
           />
-          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-paper via-transparent to-transparent" />
-          <span className="absolute right-3 top-3 rounded-full border border-rose/30 bg-paper/95 px-3 py-1 text-xs text-rose">
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-paper/90 via-transparent to-transparent" />
+          <span className="absolute right-3 top-3 rounded-full border border-rose/30 bg-paper/95 px-3 py-1 text-xs text-rose shadow-sm">
             خرائط جوجل
+          </span>
+          <span className="map-pin map-pin-pulse absolute bottom-3 left-1/2 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full bg-rose text-primary-foreground shadow-soft">
+            <PinIcon />
           </span>
         </div>
         <div className="flex items-center gap-3 bg-paper px-5 py-3.5">
-          <span className="map-pin map-pin-pulse flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose text-primary-foreground">
-            <PinIcon />
-          </span>
           <div className="min-w-0 flex-1 text-right">
             <p className="font-display text-base">افتح الموقع</p>
             <p className="text-xs text-muted-foreground">اضغط للاتجاهات</p>
           </div>
-          <span className="shrink-0 text-sm text-rose transition group-hover:translate-x-[-2px]">
-            اتجاهات ←
+          <span className="shrink-0 rounded-full border border-rose/40 px-3 py-1 text-sm text-rose transition group-hover:bg-rose group-hover:text-primary-foreground">
+            اتجاهات
           </span>
         </div>
       </a>
