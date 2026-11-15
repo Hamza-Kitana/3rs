@@ -20,7 +20,7 @@ const PLACES = [
   {
     id: "groom",
     step: "01",
-    title: "دار العريس",
+    title: "منزل العريس",
     event: "زفة العريس",
     time: "6:30",
     timeLabel: "مساءً",
@@ -32,7 +32,7 @@ const PLACES = [
   {
     id: "bride",
     step: "02",
-    title: "دار العروس",
+    title: "منزل العروس",
     event: "الفاردة",
     time: "7:30",
     timeLabel: "مساءً",
@@ -400,7 +400,7 @@ function DoorHero() {
             26 · 11 · 2026
           </p>
           <p className="mt-3 text-sm text-muted-foreground lg:text-base">
-            دار العريس · دار العروس · الصالة
+            منزل العريس · منزل العروس · الصالة
           </p>
         </div>
 
@@ -641,7 +641,7 @@ function JourneyPlaces() {
       <div className="reveal relative mx-auto max-w-2xl text-center">
         <p className="font-latin text-sm tracking-[0.35em] text-rose">JOURNEY</p>
         <h2 className="mt-2 font-display text-4xl text-ink lg:text-5xl">مسيرة الفرح</h2>
-        <p className="mt-3 text-muted-foreground">ثلاث محطات… دار العريس، دار العروس، ثم الصالة</p>
+        <p className="mt-3 text-muted-foreground">ثلاث محطات… منزل العريس، منزل العروس، ثم الصالة</p>
         <p className="mt-1 text-sm text-sage">الخميس 26 / 11 / 2026</p>
       </div>
 
@@ -1315,11 +1315,11 @@ function share() {
     TITLE,
     "الخميس 26/11/2026",
     "",
-    `① دار العريس — زفة العريس 6:30 مساءً`,
+    `① منزل العريس — زفة العريس 6:30 مساءً`,
     `${GROOM_AREA}`,
     mapUrl(PLACES[0].coords),
     "",
-    `② دار العروس — الفاردة 7:30 مساءً`,
+    `② منزل العروس — الفاردة 7:30 مساءً`,
     `${BRIDE_AREA}`,
     mapUrl(PLACES[1].coords),
     "",
@@ -1352,7 +1352,7 @@ function saveCalendar() {
     `DTEND:${toIcsDate(EVENT_END)}`,
     "SUMMARY:زفاف محمد وضحى",
     `LOCATION:${VENUE} — أوتوستراد عمان الزرقاء`,
-    "DESCRIPTION:دار العريس (زفة 6:30) اسكان طلال\\nدار العروس (فاردة 7:30) اسكان هاشم\\nالصالة (8:30–11:00) قاعة أدونيس",
+    "DESCRIPTION:منزل العريس (زفة 6:30) اسكان طلال\\nمنزل العروس (فاردة 7:30) اسكان هاشم\\nالصالة (8:30–11:00) قاعة أدونيس",
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
     "DESCRIPTION:زفاف محمد وضحى",
