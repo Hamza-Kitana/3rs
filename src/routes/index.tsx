@@ -16,7 +16,25 @@ function mapEmbed(coords: string) {
   return `https://maps.google.com/maps?q=${coords}&hl=ar&z=16&output=embed`;
 }
 
-const PLACES = [
+type Place = {
+  id: string;
+  step: string;
+  title: string;
+  event: string;
+  time: string;
+  timeLabel: string;
+  place: string;
+  detail: string;
+  coords: string;
+  link?: string;
+  accent: "groom" | "bride" | "hall";
+};
+
+function placeHref(place: Place) {
+  return place.link ?? mapUrl(place.coords);
+}
+
+const PLACES: Place[] = [
   {
     id: "groom",
     step: "01",
@@ -26,8 +44,9 @@ const PLACES = [
     timeLabel: "مساءً",
     place: "اسكان طلال",
     detail: "تجمّع العريس والانطلاق",
-    coords: "32.030727,36.057497",
-    accent: "groom" as const,
+    coords: "32.031463623046875,36.0638313293457",
+    link: "https://www.google.com/maps?q=32.031463623046875,36.0638313293457&z=17&hl=ar",
+    accent: "groom",
   },
   {
     id: "bride",
@@ -38,8 +57,9 @@ const PLACES = [
     timeLabel: "مساءً",
     place: "اسكان هاشم",
     detail: "استقبال العروس والانطلاق للقاعة",
-    coords: "32.0025,36.028889",
-    accent: "bride" as const,
+    coords: "32.0036859,36.0324288",
+    link: "https://maps.app.goo.gl/HzYi7KiEKZJT7uoY7?g_st=iw",
+    accent: "bride",
   },
   {
     id: "hall",
@@ -51,9 +71,9 @@ const PLACES = [
     place: "قاعة أدونيس",
     detail: "أوتوستراد عمان الزرقاء — مقابل نقليات جت",
     coords: "32.00365,36.037211",
-    accent: "hall" as const,
+    accent: "hall",
   },
-] as const;
+];
 
 const VENUE = PLACES[2].place;
 const VENUE_MAP_URL = mapUrl(PLACES[2].coords);
@@ -542,10 +562,10 @@ function PlaceCard({
   place,
   index,
 }: {
-  place: (typeof PLACES)[number];
+  place: Place;
   index: number;
 }) {
-  const href = mapUrl(place.coords);
+  const href = placeHref(place);
   return (
     <article
       className={`place-card place-${place.accent} relative overflow-hidden rounded-[1.75rem] border border-border bg-paper shadow-lift`}
@@ -1259,15 +1279,15 @@ function share() {
     "",
     `① منزل العريس — زفة العريس 6:30 مساءً`,
     `${GROOM_AREA}`,
-    mapUrl(PLACES[0].coords),
+    placeHref(PLACES[0]),
     "",
     `② منزل العروس — الفاردة 7:30 مساءً`,
     `${BRIDE_AREA}`,
-    mapUrl(PLACES[1].coords),
+    placeHref(PLACES[1]),
     "",
     `③ الصالة — الحفل 8:30 حتى 11:00`,
     `${VENUE}`,
-    VENUE_MAP_URL,
+    placeHref(PLACES[2]),
     "",
     `الدعوة: ${url}`,
   ].join("\n");
