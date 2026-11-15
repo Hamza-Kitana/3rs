@@ -214,26 +214,48 @@ function WeddingRings({ className = "" }: { className?: string }) {
 }
 
 function CoupleNames({ size = "hero" }: { size?: "hero" | "section" | "inline" }) {
-  if (size === "inline") {
+  if (size === "hero" || size === "inline") {
+    const big = size === "hero";
     return (
-      <div className="relative flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-5 text-center">
-        <p className="name-mark text-[clamp(2.35rem,8.5vw,4.25rem)]">محمد</p>
-        <span className="font-latin text-3xl italic text-sage/65 lg:text-4xl">&amp;</span>
-        <p className="name-mark text-[clamp(2.35rem,8.5vw,4.25rem)]">ضحى</p>
+      <div
+        className={`relative flex flex-wrap items-center justify-center px-4 text-center ${
+          big ? "gap-x-3 gap-y-2 sm:gap-x-5" : "gap-x-3 gap-y-1"
+        }`}
+      >
+        <p
+          className={`hero-name-groom name-mark ${
+            big
+              ? "text-[clamp(2.75rem,11vw,5.75rem)]"
+              : "text-[clamp(2.35rem,8.5vw,4.25rem)]"
+          }`}
+        >
+          محمد
+        </p>
+        <span
+          className={`hero-amp font-latin italic text-sage/70 ${
+            big ? "text-4xl sm:text-5xl lg:text-6xl" : "text-3xl lg:text-4xl"
+          }`}
+        >
+          &amp;
+        </span>
+        <p
+          className={`hero-name-bride name-mark ${
+            big
+              ? "text-[clamp(2.75rem,11vw,5.75rem)]"
+              : "text-[clamp(2.35rem,8.5vw,4.25rem)]"
+          }`}
+        >
+          ضحى
+        </p>
       </div>
     );
   }
 
-  const nameClass =
-    size === "hero"
-      ? "name-mark text-[clamp(3.1rem,12vw,6.75rem)]"
-      : "name-mark text-[clamp(2.5rem,9vw,4.5rem)]";
-
   return (
     <div className="relative px-5 text-center">
-      <p className={`hero-name-groom ${nameClass}`}>محمد</p>
-      <p className="hero-amp my-1 font-latin text-3xl italic text-sage/65 lg:text-4xl">&amp;</p>
-      <p className={`hero-name-bride ${nameClass}`}>ضحى</p>
+      <p className="name-mark text-[clamp(2.5rem,9vw,4.5rem)]">محمد</p>
+      <p className="my-1 font-latin text-3xl italic text-sage/65 lg:text-4xl">&amp;</p>
+      <p className="name-mark text-[clamp(2.5rem,9vw,4.5rem)]">ضحى</p>
     </div>
   );
 }
@@ -418,12 +440,12 @@ function CoupleScene() {
           <Sparkles count={14} />
         </div>
 
-        {/* Names stay centered above — never clipped at edges */}
-        <div className="couple-intro absolute inset-x-0 top-[9svh] z-30 px-5 text-center lg:top-[7svh]">
+        {/* Text stays in the top band; arch only frames the couple below */}
+        <div className="couple-intro absolute inset-x-0 top-[6svh] z-30 px-5 text-center lg:top-[5svh]">
           <p className="couple-caption font-display text-xl text-sage lg:text-3xl">
             وتلاقت القلوب على بركة الله
           </p>
-          <div className="couple-names mt-2">
+          <div className="couple-names mt-1">
             <CoupleNames size="inline" />
           </div>
         </div>
@@ -431,25 +453,25 @@ function CoupleScene() {
         <svg
           viewBox="0 0 200 300"
           preserveAspectRatio="none"
-          className="couple-arch pointer-events-none absolute bottom-[7svh] left-1/2 h-[60svh] w-[min(92vw,32rem)] -translate-x-1/2 text-rose/60 lg:bottom-[2svh] lg:h-[80svh] lg:w-[42rem]"
+          className="couple-arch pointer-events-none absolute bottom-[6svh] left-1/2 z-[5] h-[48svh] w-[min(88vw,28rem)] -translate-x-1/2 text-rose/55 lg:bottom-[2svh] lg:h-[58svh] lg:w-[36rem]"
           aria-hidden="true"
         >
           <path
             className="couple-arch-path couple-arch-outer"
-            d="M8 300 V98 A92 92 0 0 1 192 98 V300"
+            d="M10 300 V120 A90 90 0 0 1 190 120 V300"
             pathLength={1}
           />
           <path
             className="couple-arch-path couple-arch-inner opacity-45"
-            d="M22 300 V104 A78 78 0 0 1 178 104 V300"
+            d="M24 300 V128 A76 76 0 0 1 176 128 V300"
             pathLength={1}
           />
         </svg>
 
-        <div className="couple-floor absolute bottom-[6svh] left-1/2 h-9 w-[min(82vw,30rem)] -translate-x-1/2 rounded-[50%] lg:bottom-[1.5svh] lg:h-14 lg:w-[42rem]" />
+        <div className="couple-floor absolute bottom-[5svh] left-1/2 h-9 w-[min(78vw,26rem)] -translate-x-1/2 rounded-[50%] lg:bottom-[1.5svh] lg:h-12 lg:w-[34rem]" />
 
         <div
-          className="couple-stage absolute inset-x-0 bottom-[8svh] flex h-[48svh] origin-bottom items-end justify-center lg:bottom-[2.5svh] lg:h-[66svh]"
+          className="couple-stage absolute inset-x-0 bottom-[7svh] z-10 flex h-[44svh] origin-bottom items-end justify-center lg:bottom-[2.5svh] lg:h-[56svh]"
           dir="ltr"
         >
           <div className="couple-bride relative h-[95%]">
@@ -474,8 +496,8 @@ function CoupleScene() {
               className="couple-step h-full w-auto max-w-none"
             />
           </div>
-          <div className="couple-burst pointer-events-none absolute left-1/2 top-[4%]" aria-hidden="true" />
-          <WeddingRings className="couple-rings heart-beat absolute left-1/2 top-[2%] w-[4.5rem] -translate-x-1/2 -translate-y-[85%] drop-shadow-md lg:w-24" />
+          <div className="couple-burst pointer-events-none absolute left-1/2 top-[8%]" aria-hidden="true" />
+          <WeddingRings className="couple-rings heart-beat absolute left-1/2 top-[6%] w-[4.25rem] -translate-x-1/2 -translate-y-[90%] drop-shadow-md lg:w-20" />
         </div>
 
         <div className="couple-veil pointer-events-none absolute inset-0 z-20" />
@@ -932,19 +954,37 @@ function Invitation() {
           .to(".door-crack", { scaleX: 42, opacity: 0, duration: 0.45, ease: "power1.in" }, 0.05);
 
         gsap.from(".door-reveal .hero-name-groom", {
-          y: 28,
+          x: 36,
           opacity: 0,
-          duration: 0.8,
+          duration: 0.85,
           ease: "power3.out",
-          scrollTrigger: { trigger: ".scene-doors", start: "45% top", toggleActions: "play none none reverse" },
+          scrollTrigger: {
+            trigger: ".scene-doors",
+            start: "45% top",
+            toggleActions: "play none none reverse",
+          },
+        });
+        gsap.from(".door-reveal .hero-amp", {
+          scale: 0.5,
+          opacity: 0,
+          duration: 0.55,
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: ".scene-doors",
+            start: "45% top",
+            toggleActions: "play none none reverse",
+          },
         });
         gsap.from(".door-reveal .hero-name-bride", {
-          y: 28,
+          x: -36,
           opacity: 0,
-          duration: 0.8,
-          delay: 0.08,
+          duration: 0.85,
           ease: "power3.out",
-          scrollTrigger: { trigger: ".scene-doors", start: "45% top", toggleActions: "play none none reverse" },
+          scrollTrigger: {
+            trigger: ".scene-doors",
+            start: "45% top",
+            toggleActions: "play none none reverse",
+          },
         });
 
         // Couple cinematic scrub
