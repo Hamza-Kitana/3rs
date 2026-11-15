@@ -431,76 +431,56 @@ function DoorHero() {
 
 function CoupleScene() {
   return (
-    <section className="scene-couple relative h-[300svh]" aria-label="محمد وضحى">
-      <div className="bg-silk sticky top-0 h-svh overflow-hidden">
-        <FloatingOrbs />
-        <div className="couple-glow hero-bloom absolute inset-0 opacity-80" />
-        <div className="couple-rays pointer-events-none absolute left-1/2 top-[48%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2" />
-        <div className="couple-sparkles absolute inset-0">
-          <Sparkles count={14} />
-        </div>
+    <section className="scene-couple relative h-[260svh]" aria-label="محمد وضحى">
+      <div className="bg-mist sticky top-0 flex h-svh flex-col overflow-hidden">
+        <div className="couple-glow pointer-events-none absolute inset-x-0 top-[35%] mx-auto h-[55vmin] w-[55vmin] rounded-full bg-rose-soft/40 blur-3xl" />
 
-        {/* Text stays in the top band; arch only frames the couple below */}
-        <div className="couple-intro absolute inset-x-0 top-[6svh] z-30 px-5 text-center lg:top-[5svh]">
+        <div className="couple-intro relative z-20 shrink-0 px-5 pb-2 pt-[7svh] text-center">
           <p className="couple-caption font-display text-xl text-sage lg:text-3xl">
             وتلاقت القلوب على بركة الله
           </p>
-          <div className="couple-names mt-1">
+          <div className="couple-names mt-2">
             <CoupleNames size="inline" />
           </div>
+          <Divider className="couple-divider mx-auto mt-4 opacity-80" />
         </div>
 
-        <svg
-          viewBox="0 0 200 300"
-          preserveAspectRatio="none"
-          className="couple-arch pointer-events-none absolute bottom-[6svh] left-1/2 z-[5] h-[48svh] w-[min(88vw,28rem)] -translate-x-1/2 text-rose/55 lg:bottom-[2svh] lg:h-[58svh] lg:w-[36rem]"
-          aria-hidden="true"
-        >
-          <path
-            className="couple-arch-path couple-arch-outer"
-            d="M10 300 V120 A90 90 0 0 1 190 120 V300"
-            pathLength={1}
-          />
-          <path
-            className="couple-arch-path couple-arch-inner opacity-45"
-            d="M24 300 V128 A76 76 0 0 1 176 128 V300"
-            pathLength={1}
-          />
-        </svg>
-
-        <div className="couple-floor absolute bottom-[5svh] left-1/2 h-9 w-[min(78vw,26rem)] -translate-x-1/2 rounded-[50%] lg:bottom-[1.5svh] lg:h-12 lg:w-[34rem]" />
-
-        <div
-          className="couple-stage absolute inset-x-0 bottom-[7svh] z-10 flex h-[44svh] origin-bottom items-end justify-center lg:bottom-[2.5svh] lg:h-[56svh]"
-          dir="ltr"
-        >
-          <div className="couple-bride relative h-[95%]">
-            <img
-              src={bride}
-              alt="العروس ضحى"
-              width={555}
-              height={1014}
-              loading="lazy"
-              decoding="async"
-              className="couple-step h-full w-auto max-w-none"
-            />
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-end pb-[5svh]">
+          <div className="couple-rings-wrap relative z-20 mb-1 flex justify-center">
+            <WeddingRings className="couple-rings heart-beat w-14 drop-shadow-sm lg:w-16" />
           </div>
-          <div className="couple-groom relative -ml-[2.8svh] h-full">
-            <img
-              src={groom}
-              alt="العريس محمد"
-              width={381}
-              height={1113}
-              loading="lazy"
-              decoding="async"
-              className="couple-step h-full w-auto max-w-none"
-            />
+
+          <div
+            className="couple-stage relative flex h-[52svh] origin-bottom items-end justify-center lg:h-[62svh]"
+            dir="ltr"
+          >
+            <div className="couple-burst pointer-events-none absolute left-1/2 top-0" aria-hidden="true" />
+            <div className="couple-bride relative h-[94%]">
+              <img
+                src={bride}
+                alt="العروس ضحى"
+                width={555}
+                height={1014}
+                loading="lazy"
+                decoding="async"
+                className="couple-step h-full w-auto max-w-none"
+              />
+            </div>
+            <div className="couple-groom relative -ml-[2svh] h-full">
+              <img
+                src={groom}
+                alt="العريس محمد"
+                width={381}
+                height={1113}
+                loading="lazy"
+                decoding="async"
+                className="couple-step h-full w-auto max-w-none"
+              />
+            </div>
           </div>
-          <div className="couple-burst pointer-events-none absolute left-1/2 top-[8%]" aria-hidden="true" />
-          <WeddingRings className="couple-rings heart-beat absolute left-1/2 top-[6%] w-[4.25rem] -translate-x-1/2 -translate-y-[90%] drop-shadow-md lg:w-20" />
+
+          <div className="couple-floor pointer-events-none absolute bottom-[3svh] left-1/2 h-8 w-[min(70vw,22rem)] -translate-x-1/2 rounded-[50%] lg:h-10 lg:w-[28rem]" />
         </div>
-
-        <div className="couple-veil pointer-events-none absolute inset-0 z-20" />
       </div>
     </section>
   );
@@ -987,86 +967,48 @@ function Invitation() {
           },
         });
 
-        // Couple cinematic scrub
-        gsap.set([".couple-arch-outer", ".couple-arch-inner"], {
-          strokeDasharray: 1,
-          strokeDashoffset: 1,
-        });
-
+        // Couple meet — clean walk-in, no busy overlays
         const couple = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
             trigger: ".scene-couple",
             start: "top top",
             end: "bottom bottom",
-            scrub: 1.15,
+            scrub: 1.1,
           },
         });
 
         couple
-          .fromTo(".couple-caption", { opacity: 0.35, y: 10 }, { opacity: 1, y: 0, duration: 0.15 }, 0)
-          .from(".couple-stage", { scale: 0.84, duration: 0.7, ease: "power1.out" }, 0)
-          .from(
-            ".couple-bride",
-            { x: "-58vw", opacity: 0, duration: 0.58, ease: "power2.out" },
-            0.04,
-          )
-          .from(
-            ".couple-groom",
-            { x: "58vw", opacity: 0, duration: 0.58, ease: "power2.out" },
-            0.04,
-          )
+          .from(".couple-intro", { opacity: 0, y: 18, duration: 0.2 }, 0)
+          .from(".couple-stage", { scale: 0.9, duration: 0.65, ease: "power1.out" }, 0)
+          .from(".couple-bride", { x: "-48vw", opacity: 0, duration: 0.55, ease: "power2.out" }, 0.05)
+          .from(".couple-groom", { x: "48vw", opacity: 0, duration: 0.55, ease: "power2.out" }, 0.05)
           .to(
             ".couple-bride .couple-step",
-            { keyframes: { y: [0, -5, 0, -5, 0, -4, 0] }, duration: 0.58 },
-            0.04,
+            { keyframes: { y: [0, -4, 0, -4, 0] }, duration: 0.55 },
+            0.05,
           )
           .to(
             ".couple-groom .couple-step",
-            { keyframes: { y: [0, -7, 0, -7, 0, -5, 0] }, duration: 0.58 },
-            0.04,
+            { keyframes: { y: [0, -6, 0, -5, 0] }, duration: 0.55 },
+            0.05,
           )
-          .from(".couple-floor", { opacity: 0, scaleX: 0.25, duration: 0.5 }, 0.06)
-          .to(".couple-arch-outer", { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 0.38)
-          .to(".couple-arch-inner", { strokeDashoffset: 0, duration: 0.35, ease: "power1.inOut" }, 0.42)
-          .fromTo(
-            ".couple-glow",
-            { opacity: 0.2, scale: 0.65 },
-            { opacity: 1, scale: 1.12, duration: 0.35 },
-            0.4,
-          )
-          .from(".couple-rays", { opacity: 0, duration: 0.3 }, 0.52)
+          .from(".couple-floor", { opacity: 0, scaleX: 0.3, duration: 0.45 }, 0.08)
+          .fromTo(".couple-glow", { opacity: 0.15, scale: 0.7 }, { opacity: 0.9, scale: 1, duration: 0.35 }, 0.35)
           .from(
             ".couple-rings",
-            { scale: 0, rotate: -55, opacity: 0, duration: 0.2, ease: "back.out(2.4)" },
-            0.56,
+            { scale: 0, opacity: 0, y: 12, duration: 0.2, ease: "back.out(2)" },
+            0.5,
           )
           .call(
             () => {
               if (couple.scrollTrigger?.direction !== -1) burstConfetti(gsap);
             },
             [],
-            0.58,
+            0.55,
           )
-          .from(".couple-sparkles", { opacity: 0, duration: 0.2 }, 0.6)
-          .to(".couple-bride", { x: "1.1vw", duration: 0.16 }, 0.72)
-          .to(".couple-groom", { x: "-1.1vw", duration: 0.16 }, 0.72);
-
-        // Soft heartbeat on rings after they appear
-        ScrollTrigger.create({
-          trigger: ".scene-couple",
-          start: "60% top",
-          once: true,
-          onEnter: () => {
-            gsap.to(".couple-rings", {
-              scale: 1.08,
-              duration: 0.7,
-              yoyo: true,
-              repeat: -1,
-              ease: "sine.inOut",
-            });
-          },
-        });
+          .to(".couple-bride", { x: "0.8vw", duration: 0.15 }, 0.7)
+          .to(".couple-groom", { x: "-0.8vw", duration: 0.15 }, 0.7);
 
         // Soft reveals
         gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) => {
